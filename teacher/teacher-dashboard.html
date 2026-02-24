@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- MOBILE-SPECIFIC META TAGS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#7a0000">
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>MathHub Teacher Panel - Mobile Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- TOUCH ICONS FOR MOBILE -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://img.icons8.com/color/96/000000/math.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/color/96/000000/math.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://img.icons8.com/color/96/000000/math.png">
+    <link rel="stylesheet" href="teacher-dashboard.css">
+    <style>
+        
+    </style>
+</head>
+<body class="mobile-font-small">
+    <!-- Universal Top Navigation -->
+    <nav class="universal-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="nav-home-btn" onclick="showDashboard(event)">
+                    <i class="fas fa-home"></i>
+                    <span class="mobile-hide-text">Dashboard</span>
+                </a>
+                <div class="nav-title mobile-font-smaller" id="navTitle">Teacher Dashboard</div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-time mobile-font-smaller" id="currentTime">9:41 AM</div>
+                <button class="theme-toggle-nav mobile-font-smaller" onclick="showSettingsDashboard(); openSettingsTab('appearanceTab')" title="Font Size Settings">
+                    <i class="fas fa-text-height"></i>
+                    <span id="fontSizeNavIndicator">100%</span>
+                </button>
+                <button class="theme-toggle-nav mobile-font-smaller" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span class="mobile-hide-text">Dark Mode</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Teacher Container -->
+    <div class="teacher-container">
+        <!-- Main Content Area -->
+        <main class="teacher-main">
+            <!-- Dashboard Header -->
+            <header class="teacher-header mobile-compact">
+                <h1 id="pageTitle"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h1>
+                <div class="teacher-actions mobile-stack">
+                    <div class="teacher-search">
+                        <input type="text" placeholder="Search..." class="mobile-font-smaller">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <button class="btn btn-primary mobile-font-smaller" onclick="showLessonDashboard()"><i class="fas fa-plus"></i> Manage Lessons</button>
+                </div>
+            </header>
+
+            <!-- Main Dashboard Section -->
+            <div id="dashboardSection" class="dashboard-section active">
+                <div class="teacher-stats">
+                    <div class="stat-card animate-fade-up mobile-compact">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalLessons" class="mobile-font-smallest">0</h3>
+                            <p class="mobile-font-smaller">My Lessons</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card animate-fade-up mobile-compact" style="animation-delay: 0.1s">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--info), #64b5f6);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalStudents" class="mobile-font-smallest">0</h3>
+                            <p class="mobile-font-smaller">My Students</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card animate-fade-up mobile-compact" style="animation-delay: 0.2s">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--success), #81c784);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="avgGrade" class="mobile-font-smallest">0%</h3>
+                            <p class="mobile-font-smaller">Average Grade</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card animate-fade-up mobile-compact" style="animation-delay: 0.3s">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning), #ffb74d);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="pendingReviews" class="mobile-font-smallest">0</h3>
+                            <p class="mobile-font-smaller">Pending Reviews</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Overview -->
+                <section class="dashboard-overview mobile-compact">
+                    <div class="overview-header mobile-stack">
+                        <h2 class="mobile-font-small"><i class="fas fa-chart-pie"></i> My Overview</h2>
+                        <div>
+                            <select class="form-control mobile-font-smaller" style="width: auto; padding: 8px 16px;" id="timeRangeSelect">
+                                <option>This Week</option>
+                                <option>This Month</option>
+                                <option>This Semester</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Tabs - Only Lessons Tab Remains -->
+                    <div class="content-tabs">
+                        <button class="tab-btn active mobile-font-smaller" onclick="switchTab('lessons')">Lessons</button>
+                    </div>
+                    
+                    <!-- Tab Contents - Only Lessons Tab Remains -->
+                    <div id="lessonsTab" class="tab-content">
+                        <div class="dashboard-card mobile-compact">
+                            <div class="card-header mobile-stack">
+                                <h3 class="mobile-font-small"><i class="fas fa-book"></i> Recent Lessons</h3>
+                                <button class="btn btn-secondary mobile-font-smaller" onclick="showLessonDashboard()">View All</button>
+                            </div>
+                            
+                            <div class="quick-stats">
+                                <div class="quick-stat mobile-compact">
+                                    <span class="value mobile-font-smallest">0</span>
+                                    <span class="label mobile-font-smaller">Published</span>
+                                </div>
+                                <div class="quick-stat mobile-compact">
+                                    <span class="value mobile-font-smallest">0</span>
+                                    <span class="label mobile-font-smaller">In Draft</span>
+                                </div>
+                                <div class="quick-stat mobile-compact">
+                                    <span class="value mobile-font-smallest">0</span>
+                                    <span class="label mobile-font-smaller">Needs Review</span>
+                                </div>
+                                <div class="quick-stat mobile-compact">
+                                    <span class="value mobile-font-smallest">0%</span>
+                                    <span class="label mobile-font-smaller">Avg. Completion</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Activity List -->
+                            <div class="activity-list">
+                                <div class="no-data-message">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p class="mobile-font-smaller">No recent activities</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Student Performance Dashboard -->
+            <div id="performanceDashboardSection" class="dashboard-section">
+                <div class="performance-dashboard">
+                    <!-- Performance Header -->
+                    <div class="teacher-header mobile-compact">
+                        <h1 class="mobile-font-small"><i class="fas fa-chart-line"></i> Student Performance</h1>
+                        <div class="teacher-actions mobile-stack">
+                            <div class="teacher-search">
+                                <input type="text" placeholder="Search students..." id="searchStudentsInput" class="mobile-font-smaller">
+                                <button><i class="fas fa-search"></i></button>
+                            </div>
+                            <button class="btn btn-primary mobile-font-smaller" onclick="exportPerformanceData()">
+                                <i class="fas fa-file-export"></i> Export Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Performance Stats -->
+                    <div class="performance-stats">
+                        <div class="performance-stat-card gold mobile-compact">
+                            <div class="performance-stat-icon gold">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="performance-stat-content">
+                                <div class="performance-stat-value mobile-font-smallest" id="avgScore">0%</div>
+                                <div class="performance-stat-label mobile-font-smaller">Average Score</div>
+                                <div class="performance-stat-change positive mobile-font-smaller">
+                                    <i class="fas fa-arrow-up"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-stat-card silver mobile-compact">
+                            <div class="performance-stat-icon silver">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="performance-stat-content">
+                                <div class="performance-stat-value mobile-font-smallest" id="completionRate">0%</div>
+                                <div class="performance-stat-label mobile-font-smaller">Completion Rate</div>
+                                <div class="performance-stat-change positive mobile-font-smaller">
+                                    <i class="fas fa-arrow-up"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-stat-card bronze mobile-compact">
+                            <div class="performance-stat-icon bronze">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="performance-stat-content">
+                                <div class="performance-stat-value mobile-font-smallest" id="avgTime">0m</div>
+                                <div class="performance-stat-label mobile-font-smaller">Avg. Time per Lesson</div>
+                                <div class="performance-stat-change negative mobile-font-smaller">
+                                    <i class="fas fa-arrow-down"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-stat-card mobile-compact">
+                            <div class="performance-stat-icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="performance-stat-content">
+                                <div class="performance-stat-value mobile-font-smallest" id="activeStudents">0</div>
+                                <div class="performance-stat-label mobile-font-smaller">Active Students</div>
+                                <div class="performance-stat-change positive mobile-font-smaller">
+                                    <i class="fas fa-arrow-up"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Charts -->
+                    <div class="performance-charts-container">
+                        <div class="performance-chart-card mobile-compact">
+                            <div class="performance-chart-header mobile-stack">
+                                <h3 class="mobile-font-small"><i class="fas fa-chart-bar"></i> Performance Trend</h3>
+                                <select class="form-control small mobile-font-smaller" onchange="updatePerformanceChart()" id="performanceTimeRange">
+                                    <option value="week">Last 7 Days</option>
+                                    <option value="month" selected>Last 30 Days</option>
+                                    <option value="quarter">Last 3 Months</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="performanceTrendChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-chart-card mobile-compact">
+                            <div class="performance-chart-header mobile-stack">
+                                <h3 class="mobile-font-small"><i class="fas fa-chart-pie"></i> Grade Distribution</h3>
+                                <select class="form-control small mobile-font-smaller" onchange="updateScoreDistribution()" id="scoreDistributionFilter">
+                                    <option value="all">All Students</option>
+                                    <option value="polynomial">PolyLearn</option>
+                                    <option value="factorial">FactoLearn</option>
+                                    <option value="mdas">MathEase</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="scoreDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers Table -->
+                    <div class="top-performers mobile-compact">
+                        <div class="top-performers-header mobile-stack">
+                            <h3 class="mobile-font-small"><i class="fas fa-medal"></i> Top Students</h3>
+                            <div class="filter-group">
+                                <label class="mobile-font-smaller"><i class="fas fa-filter"></i> Filter by:</label>
+                                <select class="form-control small mobile-font-smaller" onchange="filterTopPerformers()" id="topPerformersFilter">
+                                    <option value="all">All Subjects</option>
+                                    <option value="polynomial">PolyLearn</option>
+                                    <option value="factorial">FactoLearn</option>
+                                    <option value="mdas">MathEase</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="users-table-container table-responsive">
+                            <table class="top-performers-table mobile-font-smaller">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Rank</th>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th style="width: 100px;">Grade</th>
+                                        <th style="width: 150px;">Progress</th>
+                                        <th style="width: 80px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topPerformersBody">
+                                    <!-- Top performers will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPDATED: Lesson Management Dashboard (from admin code) -->
+            <div id="lessonDashboardSection" class="dashboard-section">
+                <div class="lesson-dashboard">
+                    <!-- Subject Selector -->
+                    <div class="subject-selector-container">
+                        <div class="subject-selector mobile-compact">
+                            <h3 class="mobile-font-small"><i class="fas fa-book-open"></i> My Subjects</h3>
+                            <p class="selector-subtitle mobile-font-smaller">Select a subject to manage lessons</p>
+                            
+                            <div class="subject-cards">
+                                <!-- PolyLearn Card -->
+                                <div class="subject-card interactive-card active mobile-compact" data-subject="polynomial" onclick="selectSubject('polynomial')">
+                                    <div class="subject-icon">
+                                        <i class="fas fa-superscript"></i>
+                                    </div>
+                                    <div class="subject-info">
+                                        <h4 class="mobile-font-small">PolyLearn <span class="subject-badge-mini badge-polynomial mobile-font-smaller">Active</span></h4>
+                                        <p class="subject-description mobile-font-smaller">Algebraic expressions with variables and coefficients</p>
+                                        <div class="subject-stats mobile-font-smaller">
+                                            <span><i class="fas fa-chalkboard-teacher"></i> <span id="polyLessons" class="mobile-font-smallest">0</span> Lessons</span>
+                                            <span><i class="fas fa-file-alt"></i> <span id="polyResources" class="mobile-font-smallest">0</span> Resources</span>
+                                        </div>
+                                        <div class="subject-progress">
+                                            <div class="progress-label mobile-font-smaller">
+                                                <span>Progress</span>
+                                                <span>0%</span>
+                                            </div>
+                                            <div class="progress-bar-small">
+                                                <div class="progress-fill-small" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subject-actions">
+                                        <button class="btn-icon small mobile-font-smaller" onclick="editSubject('polynomial', event)"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="addSubjectResource('polynomial', event)"><i class="fas fa-plus"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="viewSubjectLessons('polynomial', event)"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                    <div class="subject-indicator">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- FactoLearn Card -->
+                                <div class="subject-card interactive-card mobile-compact" data-subject="factorial" onclick="selectSubject('factorial')">
+                                    <div class="subject-icon">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="subject-info">
+                                        <h4 class="mobile-font-small">FactoLearn <span class="subject-badge-mini badge-factorial mobile-font-smaller">Teaching</span></h4>
+                                        <p class="subject-description mobile-font-smaller">Product of all positive integers less than or equal to n</p>
+                                        <div class="subject-stats mobile-font-smaller">
+                                            <span><i class="fas fa-chalkboard-teacher"></i> <span id="factLessons" class="mobile-font-smallest">0</span> Lessons</span>
+                                            <span><i class="fas fa-file-alt"></i> <span id="factResources" class="mobile-font-smallest">0</span> Resources</span>
+                                        </div>
+                                        <div class="subject-progress">
+                                            <div class="progress-label mobile-font-smaller">
+                                                <span>Progress</span>
+                                                <span>0%</span>
+                                            </div>
+                                            <div class="progress-bar-small">
+                                                <div class="progress-fill-small" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subject-actions">
+                                        <button class="btn-icon small mobile-font-smaller" onclick="editSubject('factorial', event)"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="addSubjectResource('factorial', event)"><i class="fas fa-plus"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="viewSubjectLessons('factorial', event)"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                    <div class="subject-indicator">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- MathEase Card -->
+                                <div class="subject-card interactive-card mobile-compact" data-subject="mdas" onclick="selectSubject('mdas')">
+                                    <div class="subject-icon">
+                                        <i class="fas fa-divide"></i>
+                                    </div>
+                                    <div class="subject-info">
+                                        <h4 class="mobile-font-small">MathEase <span class="subject-badge-mini badge-mdas mobile-font-smaller">Teaching</span></h4>
+                                        <p class="subject-description mobile-font-smaller">Order of operations: Multiplication, Division, Addition, Subtraction</p>
+                                        <div class="subject-stats mobile-font-smaller">
+                                            <span><i class="fas fa-chalkboard-teacher"></i> <span id="mdasLessons" class="mobile-font-smallest">0</span> Lessons</span>
+                                            <span><i class="fas fa-file-alt"></i> <span id="mdasResources" class="mobile-font-smallest">0</span> Resources</span>
+                                        </div>
+                                        <div class="subject-progress">
+                                            <div class="progress-label mobile-font-smaller">
+                                                <span>Progress</span>
+                                                <span>0%</span>
+                                            </div>
+                                            <div class="progress-bar-small">
+                                                <div class="progress-fill-small" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subject-actions">
+                                        <button class="btn-icon small mobile-font-smaller" onclick="editSubject('mdas', event)"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="addSubjectResource('mdas', event)"><i class="fas fa-plus"></i></button>
+                                        <button class="btn-icon small mobile-font-smaller" onclick="viewSubjectLessons('mdas', event)"><i class="fas fa-eye"></i></button>
+                                    </div>
+                                    <div class="subject-indicator">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Subject Management Controls -->
+                            <div class="subject-management-controls mobile-compact mobile-stack">
+                                <div class="control-group">
+                                    <button class="btn btn-primary mobile-font-smaller" onclick="openCreateLessonModal()">
+                                        <i class="fas fa-plus-circle"></i> Create New Lesson
+                                    </button>
+                                    <button class="btn btn-secondary mobile-font-smaller" onclick="manageAllLessons()">
+                                        <i class="fas fa-list"></i> View All Lessons
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-container">
+                        <!-- Main Content Area - Initially showing welcome/instructions -->
+                        <div class="main-content">
+                            <div id="welcomeSection" class="content-section">
+                                <!-- Header Section -->
+                                <div class="section-header mobile-compact">
+                                    <h2 class="mobile-font-small"><i class="fas fa-home"></i> Welcome to MathHub Lesson Manager</h2>
+                                    <p class="section-subtitle mobile-font-smaller">Select a subject from the cards above, then click "View" to manage lessons</p>
+                                </div>
+
+                                <!-- Instructions -->
+                                <div class="lesson-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-info-circle"></i> How to Use</h3>
+                                    <div class="instructions-grid">
+                                        <div class="instruction-card mobile-compact">
+                                            <i class="fas fa-mouse-pointer"></i>
+                                            <h4 class="mobile-font-small">1. Select a Subject</h4>
+                                            <p class="mobile-font-smaller">Click on any subject card to make it active</p>
+                                        </div>
+                                        <div class="instruction-card mobile-compact">
+                                            <i class="fas fa-eye"></i>
+                                            <h4 class="mobile-font-small">2. Click View</h4>
+                                            <p class="mobile-font-smaller">Click the "View" button on the active subject card</p>
+                                        </div>
+                                        <div class="instruction-card mobile-compact">
+                                            <i class="fas fa-plus-circle"></i>
+                                            <h4 class="mobile-font-small">3. Manage Lessons</h4>
+                                            <p class="mobile-font-smaller">Create new lessons or edit existing ones in the popup</p>
+                                        </div>
+                                        <div class="instruction-card mobile-compact">
+                                            <i class="fas fa-save"></i>
+                                            <h4 class="mobile-font-small">4. Save Changes</h4>
+                                            <p class="mobile-font-smaller">All changes are automatically saved to your selected subject</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Current Subject Info -->
+                                <div class="lesson-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-bookmark"></i> Current Active Subject</h3>
+                                    <div class="active-subject-display mobile-compact mobile-stack">
+                                        <div class="subject-icon-large" id="welcomeSubjectIcon">
+                                            <i class="fas fa-superscript"></i>
+                                        </div>
+                                        <div class="subject-info-large">
+                                            <h4 id="welcomeSubjectName" class="mobile-font-small">PolyLearn</h4>
+                                            <p id="welcomeSubjectDesc" class="mobile-font-smaller">Algebraic expressions with variables and coefficients</p>
+                                            <div class="subject-stats-large mobile-font-smaller">
+                                                <span><i class="fas fa-chalkboard-teacher"></i> <span id="welcomeLessonCount" class="mobile-font-smallest">0</span> Lessons</span>
+                                                <span><i class="fas fa-file-alt"></i> <span id="welcomeResourceCount" class="mobile-font-smallest">0</span> Resources</span>
+                                                <span><i class="fas fa-users"></i> <span id="welcomeStudentCount" class="mobile-font-smallest">0</span> Students</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="instruction-note mobile-font-smaller">
+                                        <i class="fas fa-lightbulb"></i> Click the "View" button on the PolyLearn card above to start managing lessons
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="lesson-sidebar">
+                            <!-- Navigation Menu -->
+                            <div class="lesson-sidebar-card mobile-compact">
+                                <h3 class="mobile-font-small"><i class="fas fa-cogs"></i> Quick Actions</h3>
+                                <p class="sidebar-subtitle mobile-font-smaller">Manage your lessons and learning materials</p>
+                                
+                                <ul class="lesson-sidebar-menu">
+                                    <li><a href="#" class="mobile-font-smaller" onclick="openCreateLessonModal(event)"><i class="fas fa-plus-circle"></i> Create New Lesson</a></li>
+                                    <li><a href="#" class="mobile-font-smaller" onclick="viewSubjectLessons(currentSubject)"><i class="fas fa-list"></i> View All Lessons</a></li>
+                                    <li><a href="#" class="mobile-font-smaller" onclick="showDashboard()"><i class="fas fa-home"></i> Back to Home</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Current Subject Info -->
+                            <div class="lesson-sidebar-card mobile-compact">
+                                <div class="lesson-info-box">
+                                    <h4 class="mobile-font-small"><i class="fas fa-book"></i> Active Subject</h4>
+                                    <p id="sidebarSubjectName" class="mobile-font-smaller">PolyLearn</p>
+                                    <p class="mobile-font-smaller"><i class="fas fa-lesson"></i> <span id="sidebarLessonCount" class="mobile-font-smallest">0</span> Lessons</p>
+                                    <p class="mobile-font-smaller"><i class="fas fa-users"></i> <span id="sidebarStudentCount" class="mobile-font-smallest">0</span> Students</p>
+                                    <p class="mobile-font-smaller"><i class="fas fa-chart-line"></i> <span id="sidebarProgress" class="mobile-font-smallest">0%</span> Complete</p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Stats -->
+                            <div class="lesson-sidebar-card mobile-compact">
+                                <h4 class="mobile-font-small"><i class="fas fa-chart-pie"></i> Quick Stats</h4>
+                                <div class="lesson-stats-sidebar">
+                                    <div class="stat-item mobile-compact">
+                                        <span class="stat-value mobile-font-smallest" id="totalLessonsSidebar">0</span>
+                                        <span class="stat-label mobile-font-smaller">Total Lessons</span>
+                                    </div>
+                                    <div class="stat-item mobile-compact">
+                                        <span class="stat-value mobile-font-smallest" id="totalSubjectsSidebar">0</span>
+                                        <span class="stat-label mobile-font-smaller">Subjects</span>
+                                    </div>
+                                    <div class="stat-item mobile-compact">
+                                        <span class="stat-value mobile-font-smallest" id="totalResourcesSidebar">0</span>
+                                        <span class="stat-label mobile-font-smaller">Resources</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignments & Grading Dashboard -->
+            <div id="assignmentsDashboardSection" class="dashboard-section">
+                <div class="assignments-dashboard">
+                    <!-- Assignments Header -->
+                    <div class="teacher-header mobile-compact">
+                        <h1 class="mobile-font-small"><i class="fas fa-tasks"></i> Assignments & Grading</h1>
+                        <div class="teacher-actions mobile-stack">
+                            <div class="teacher-search">
+                                <input type="text" placeholder="Search assignments..." id="searchAssignmentsInput" class="mobile-font-smaller">
+                                <button><i class="fas fa-search"></i></button>
+                            </div>
+                            <button class="btn btn-primary mobile-font-smaller" onclick="createAssignment()">
+                                <i class="fas fa-plus"></i> New Assignment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Assignments Stats -->
+                    <div class="assignment-stats">
+                        <div class="assignment-stat-card mobile-compact">
+                            <div class="assignment-stat-icon active">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="assignment-stat-content">
+                                <h3 id="activeAssignments" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Active Assignments</p>
+                            </div>
+                        </div>
+                        
+                        <div class="assignment-stat-card mobile-compact">
+                            <div class="assignment-stat-icon submitted">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <div class="assignment-stat-content">
+                                <h3 id="submittedAssignments" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Submitted</p>
+                            </div>
+                        </div>
+                        
+                        <div class="assignment-stat-card mobile-compact">
+                            <div class="assignment-stat-icon graded">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="assignment-stat-content">
+                                <h3 id="gradedAssignments" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Graded</p>
+                            </div>
+                        </div>
+                        
+                        <div class="assignment-stat-card mobile-compact">
+                            <div class="assignment-stat-icon pending">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <div class="assignment-stat-content">
+                                <h3 id="pendingGrading" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Need Grading</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignments Table -->
+                    <div class="assignments-table-container mobile-compact">
+                        <div class="assignments-table-header mobile-stack">
+                            <h3 class="mobile-font-small"><i class="fas fa-list"></i> Recent Assignments</h3>
+                            <div class="filter-group">
+                                <label class="mobile-font-smaller"><i class="fas fa-filter"></i> Status:</label>
+                                <select class="form-control small mobile-font-smaller" onchange="filterAssignments()" id="assignmentStatusFilter">
+                                    <option value="all">All</option>
+                                    <option value="active">Active</option>
+                                    <option value="submitted">Submitted</option>
+                                    <option value="graded">Graded</option>
+                                    <option value="overdue">Overdue</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="users-table-container table-responsive">
+                            <table class="assignments-table mobile-font-smaller">
+                                <thead>
+                                    <tr>
+                                        <th>Assignment</th>
+                                        <th>Subject</th>
+                                        <th>Due Date</th>
+                                        <th>Submissions</th>
+                                        <th>Avg. Grade</th>
+                                        <th>Status</th>
+                                        <th style="width: 120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assignmentsTableBody">
+                                    <!-- Assignments will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Profile Section -->
+            <div id="profileDashboardSection" class="dashboard-section">
+                <div class="profile-dashboard">
+                    <!-- Profile Header -->
+                    <div class="teacher-header mobile-compact">
+                        <h1 class="mobile-font-small"><i class="fas fa-user-circle"></i> My Profile</h1>
+                        <div class="teacher-actions mobile-stack">
+                            <button class="btn btn-primary mobile-font-smaller" onclick="saveProfile()">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Content -->
+                    <div class="profile-content">
+                        <div class="profile-sidebar">
+                            <div class="profile-card mobile-compact">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="profile-info">
+                                    <h3 id="teacherName" class="mobile-font-small">Teacher Name</h3>
+                                    <p class="mobile-font-smaller"><i class="fas fa-envelope"></i> teacher@example.com</p>
+                                    <p class="mobile-font-smaller"><i class="fas fa-graduation-cap"></i> Mathematics Teacher</p>
+                                    <p class="mobile-font-smaller"><i class="fas fa-school"></i> Math Department</p>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-stats-card mobile-compact">
+                                <h4 class="mobile-font-small"><i class="fas fa-chart-bar"></i> Teaching Stats</h4>
+                                <div class="profile-stats">
+                                    <div class="profile-stat mobile-compact">
+                                        <span class="stat-value mobile-font-smallest">0</span>
+                                        <span class="stat-label mobile-font-smaller">Subjects</span>
+                                    </div>
+                                    <div class="profile-stat mobile-compact">
+                                        <span class="stat-value mobile-font-smallest">0</span>
+                                        <span class="stat-label mobile-font-smaller">Lessons</span>
+                                    </div>
+                                    <div class="profile-stat mobile-compact">
+                                        <span class="stat-value mobile-font-smallest">0</span>
+                                        <span class="stat-label mobile-font-smaller">Students</span>
+                                    </div>
+                                    <div class="profile-stat mobile-compact">
+                                        <span class="stat-value mobile-font-smallest">0.0</span>
+                                        <span class="stat-label mobile-font-smaller">Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-main">
+                            <div class="profile-tabs">
+                                <button class="profile-tab-btn active mobile-font-smaller" onclick="openProfileTab('personalTab')">Personal Info</button>
+                                <button class="profile-tab-btn mobile-font-smaller" onclick="openProfileTab('teachingTab')">Teaching</button>
+                                <button class="profile-tab-btn mobile-font-smaller" onclick="openProfileTab('settingsTab')">Settings</button>
+                            </div>
+                            
+                            <div id="personalTab" class="profile-tab-content active">
+                                <div class="profile-form">
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-user"></i> Full Name</label>
+                                        <input type="text" class="form-control mobile-font-smaller" value="Teacher Name" id="teacherFullName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-envelope"></i> Email</label>
+                                        <input type="email" class="form-control mobile-font-smaller" value="teacher@example.com" id="teacherEmail">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-phone"></i> Phone</label>
+                                        <input type="tel" class="form-control mobile-font-smaller" value="+1 (000) 000-0000" id="teacherPhone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-graduation-cap"></i> Education</label>
+                                        <textarea class="form-control mobile-font-smaller" id="teacherEducation">Your educational background</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="teachingTab" class="profile-tab-content">
+                                <div class="profile-form">
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-school"></i> Department</label>
+                                        <input type="text" class="form-control mobile-font-smaller" value="Mathematics" id="teacherDepartment">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-calendar"></i> Teaching Since</label>
+                                        <input type="text" class="form-control mobile-font-smaller" value="Year" id="teacherSince">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-star"></i> Bio</label>
+                                        <textarea class="form-control mobile-font-smaller" rows="4" id="teacherBio">Your teaching bio and philosophy</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="settingsTab" class="profile-tab-content">
+                                <div class="profile-form">
+                                    <div class="form-group">
+                                        <label class="form-label mobile-font-smaller"><i class="fas fa-bell"></i> Notifications</label>
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifAssignments"> Assignment Submissions
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifQuestions"> Student Questions
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifGrades"> Grade Updates
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Dashboard -->
+<div id="feedbackDashboardSection" class="dashboard-section">
+    <div class="feedback-dashboard">
+        <!-- Feedback Header -->
+        <div class="teacher-header mobile-compact">
+    <h1 class="mobile-font-small"><i class="fas fa-comment-dots"></i> Feedback & Reviews</h1>
+    <div class="teacher-actions mobile-stack">
+        <div class="teacher-search">
+            <input type="text" placeholder="Search feedback..." id="searchFeedbackInput" class="mobile-font-smaller">
+            <button onclick="filterFeedback()"><i class="fas fa-search"></i></button>
+        </div>
+        <button class="btn btn-primary mobile-font-smaller" onclick="exportFeedbackData()">
+            <i class="fas fa-file-export"></i> Export
+        </button>
+        <button class="btn btn-secondary mobile-font-smaller" onclick="refreshAllData()" title="Refresh All Data">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+</div>
+
+        <!-- Feedback Stats -->
+        <div class="feedback-stats" id="feedbackStats">
+            <div class="feedback-stat-card mobile-compact">
+                <div class="feedback-stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="feedback-stat-content">
+                    <h3 id="averageRating" class="mobile-font-smallest">0.0</h3>
+                    <p class="mobile-font-smaller">Average Rating</p>
+                </div>
+            </div>
+            
+            <div class="feedback-stat-card mobile-compact">
+                <div class="feedback-stat-icon" style="background: linear-gradient(135deg, var(--success), #81c784);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="feedback-stat-content">
+                    <h3 id="totalReviews" class="mobile-font-smallest">0</h3>
+                    <p class="mobile-font-smaller">Total Reviews</p>
+                </div>
+            </div>
+            
+            <div class="feedback-stat-card mobile-compact">
+                <div class="feedback-stat-icon" style="background: linear-gradient(135deg, var(--warning), #ffb74d);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="feedback-stat-content">
+                    <h3 id="pendingFeedback" class="mobile-font-smallest">0</h3>
+                    <p class="mobile-font-smaller">Pending Responses</p>
+                </div>
+            </div>
+            
+            <div class="feedback-stat-card mobile-compact">
+                <div class="feedback-stat-icon" style="background: linear-gradient(135deg, var(--info), #64b5f6);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feedback-stat-content">
+                    <h3 id="satisfactionRate" class="mobile-font-smallest">0%</h3>
+                    <p class="mobile-font-smaller">Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Filters -->
+        <div class="feedback-filters mobile-compact">
+            <div class="filter-group">
+                <label class="mobile-font-smaller"><i class="fas fa-filter"></i> Filter by:</label>
+                <select class="form-control small mobile-font-smaller" onchange="filterFeedback()" id="feedbackFilter">
+                    <option value="all">All Feedback</option>
+                    <option value="new">New</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="mobile-font-smaller"><i class="fas fa-tag"></i> Type:</label>
+                <select class="form-control small mobile-font-smaller" onchange="filterFeedback()" id="feedbackTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="suggestion">Suggestions</option>
+                    <option value="bug">Bug Reports</option>
+                    <option value="praise">Praise</option>
+                    <option value="question">Questions</option>
+                    <option value="complaint">Complaints</option>
+                    <option value="rating">Ratings</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Feedback List -->
+        <div class="feedback-list-container mobile-compact">
+            <h3 class="mobile-font-small"><i class="fas fa-comments"></i> Student Feedback</h3>
+            <div class="feedback-list" id="feedbackList">
+                <!-- Feedback items will be loaded here -->
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                    <p class="mobile-font-smaller">Loading feedback...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="feedbackPagination"></div>
+        </div>
+    </div>
+</div>
+
+            <!-- Quiz Management Dashboard -->
+            <div id="quizDashboardSection" class="dashboard-section">
+                <div class="quiz-dashboard">
+                    <!-- Quiz Header -->
+                    <div class="teacher-header mobile-compact">
+                        <h1 class="mobile-font-small"><i class="fas fa-question-circle"></i> Quiz Management</h1>
+                        <div class="teacher-actions mobile-stack">
+                            <div class="teacher-search">
+                                <input type="text" placeholder="Search quizzes..." id="searchQuizzesInput" class="mobile-font-smaller">
+                                <button><i class="fas fa-search"></i></button>
+                            </div>
+                            <!-- UPDATED: Changed to createNewQuiz() function -->
+                            <button class="btn btn-primary mobile-font-smaller" onclick="createNewQuiz()">
+                                <i class="fas fa-plus"></i> Create Your First Quiz
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Stats -->
+                    <div class="quiz-stats">
+                        <div class="quiz-stat-card mobile-compact">
+                            <div class="quiz-stat-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="quiz-stat-content">
+                                <h3 id="totalQuizzes" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Total Quizzes</p>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-stat-card mobile-compact">
+                            <div class="quiz-stat-icon" style="background: linear-gradient(135deg, var(--success), #81c784);">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="quiz-stat-content">
+                                <h3 id="activeQuizzes" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">Active Quizzes</p>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-stat-card mobile-compact">
+                            <div class="quiz-stat-icon" style="background: linear-gradient(135deg, var(--warning), #ffb74d);">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="quiz-stat-content">
+                                <h3 id="draftQuizzes" class="mobile-font-smallest">0</h3>
+                                <p class="mobile-font-smaller">In Draft</p>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-stat-card mobile-compact">
+                            <div class="quiz-stat-icon" style="background: linear-gradient(135deg, var(--info), #64b5f6);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="quiz-stat-content">
+                                <h3 id="avgQuizScore" class="mobile-font-smallest">0%</h3>
+                                <p class="mobile-font-smaller">Avg. Score</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Quizzes Table -->
+                    <div class="quiz-table-container mobile-compact">
+                        <div class="quiz-table-header mobile-stack">
+                            <h3 class="mobile-font-small"><i class="fas fa-list"></i> Recent Quizzes</h3>
+                            <div class="filter-group">
+                                <label class="mobile-font-smaller"><i class="fas fa-filter"></i> Filter by:</label>
+                                <select class="form-control small mobile-font-smaller" onchange="filterQuizzes()" id="quizStatusFilter">
+                                    <option value="all">All Quizzes</option>
+                                    <option value="active">Active</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="users-table-container table-responsive">
+                            <table class="quiz-table mobile-font-smaller">
+                                <thead>
+                                    <tr>
+                                        <th>Quiz Title</th>
+                                        <th>Subject</th>
+                                        <th>Questions</th>
+                                        <th>Status</th>
+                                        <th>Avg. Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quizTableBody">
+                                    <!-- Quizzes will be dynamically loaded here -->
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">
+                                            <div class="no-data-message">
+                                                <i class="fas fa-question-circle"></i>
+                                                <p>No quizzes created yet</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practice Dashboard -->
+<div id="practiceDashboardSection" class="dashboard-section">
+    <div class="practice-dashboard">
+        <!-- Practice Header -->
+        <div class="teacher-header mobile-compact">
+            <h1 class="mobile-font-small"><i class="fas fa-dumbbell"></i> Practice Materials</h1>
+            <div class="teacher-actions mobile-stack">
+                <div class="teacher-search">
+                    <input type="text" placeholder="Search practice materials..." id="searchPracticeInput" class="mobile-font-smaller">
+                    <button onclick="filterPractice()"><i class="fas fa-search"></i></button>
+                </div>
+                <button class="btn btn-primary mobile-font-smaller" onclick="addPracticeMaterial()">
+                    <i class="fas fa-plus"></i> Add Practice Material
+                </button>
+            </div>
+        </div>
+
+        <!-- Practice Stats -->
+        <div class="practice-stats">
+            <div class="practice-stat-card mobile-compact">
+                <div class="practice-stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="practice-stat-content">
+                    <h3 id="totalPractice" class="mobile-font-smallest">0</h3>
+                    <p class="mobile-font-smaller">Practice Sets</p>
+                </div>
+            </div>
+            
+            <div class="practice-stat-card mobile-compact">
+                <div class="practice-stat-icon" style="background: linear-gradient(135deg, var(--success), #81c784);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="practice-stat-content">
+                    <h3 id="completedPractice" class="mobile-font-smallest">0</h3>
+                    <p class="mobile-font-smaller">Completed</p>
+                </div>
+            </div>
+            
+            <div class="practice-stat-card mobile-compact">
+                <div class="practice-stat-icon" style="background: linear-gradient(135deg, var(--info), #64b5f6);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="practice-stat-content">
+                    <h3 id="practiceStudents" class="mobile-font-smallest">0</h3>
+                    <p class="mobile-font-smaller">Students</p>
+                </div>
+            </div>
+            
+            <div class="practice-stat-card mobile-compact">
+                <div class="practice-stat-icon" style="background: linear-gradient(135deg, #9C27B0, #BA68C8);">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="practice-stat-content">
+                    <h3 id="avgPracticeScore" class="mobile-font-smallest">0%</h3>
+                    <p class="mobile-font-smaller">Avg. Score</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Filters - UPDATED with Difficulty Filter -->
+        <div class="practice-filters mobile-compact" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div class="filter-group" style="flex: 1; min-width: 150px;">
+                <label class="mobile-font-smaller"><i class="fas fa-filter"></i> Filter by:</label>
+                <select class="form-control small mobile-font-smaller" onchange="filterPracticeMaterials()" id="practiceFilter">
+                    <option value="all">All Difficulties</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            
+            <div class="filter-group" style="flex: 1; min-width: 150px;">
+                <label class="mobile-font-smaller"><i class="fas fa-tag"></i> Type:</label>
+                <select class="form-control small mobile-font-smaller" onchange="filterPracticeMaterials()" id="practiceTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="true_false">True/False</option>
+                    <option value="fill_blank">Fill in Blank</option>
+                    <option value="matching">Matching</option>
+                </select>
+            </div>
+            
+            <div class="filter-group" style="flex: 1; min-width: 150px;">
+                <label class="mobile-font-smaller"><i class="fas fa-sync-alt"></i> Status:</label>
+                <select class="form-control small mobile-font-smaller" onchange="filterPracticeMaterials()" id="practiceStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="draft">Draft</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Practice Materials Grid -->
+        <div class="practice-grid-container mobile-compact">
+            <div class="practice-grid-header mobile-stack">
+                <h3 class="mobile-font-small"><i class="fas fa-th-large"></i> Practice Materials</h3>
+                <div class="pagination-info">
+                    <span>Showing <span id="practiceStart">0</span>-<span id="practiceEnd">0</span> of <span id="practiceTotal">0</span></span>
+                </div>
+            </div>
+            
+            <div class="practice-materials-grid" id="practiceMaterialsGrid">
+                <!-- Practice materials will be loaded here -->
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-controls" style="display: flex; justify-content: center; gap: 5px; margin-top: 20px;" id="practicePagination">
+                <button class="btn-icon small" id="prevPracticePage" onclick="changePracticePage('prev')" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="practicePages" style="display: flex; gap: 5px;"></div>
+                <button class="btn-icon small" id="nextPracticePage" onclick="changePracticePage('next')" disabled>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Settings Dashboard with Logout -->
+            <div id="settingsDashboardSection" class="dashboard-section">
+                <div class="settings-dashboard">
+                    <!-- Settings Header -->
+                    <div class="teacher-header mobile-compact">
+                        <h1 class="mobile-font-small"><i class="fas fa-cog"></i> Settings</h1>
+                        <div class="teacher-actions mobile-stack">
+                            <button class="btn btn-primary mobile-font-smaller" onclick="saveSettings()">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Settings Content -->
+                    <div class="settings-content">
+                        <div class="settings-sidebar">
+                            <div class="settings-menu">
+                                <button class="settings-menu-btn active mobile-font-smaller" onclick="openSettingsTab('accountTab')">
+                                    <i class="fas fa-user-cog"></i> Account Settings
+                                </button>
+                                <button class="settings-menu-btn mobile-font-smaller" onclick="openSettingsTab('notificationsTab')">
+                                    <i class="fas fa-bell"></i> Notifications
+                                </button>
+                                <button class="settings-menu-btn mobile-font-smaller" onclick="openSettingsTab('privacyTab')">
+                                    <i class="fas fa-shield-alt"></i> Privacy & Security
+                                </button>
+                                <button class="settings-menu-btn mobile-font-smaller" onclick="openSettingsTab('appearanceTab')">
+                                    <i class="fas fa-palette"></i> Appearance
+                                </button>
+                                <!-- LOGOUT TAB ADDED HERE -->
+                                <button class="settings-menu-btn mobile-font-smaller" onclick="openSettingsTab('accountSecurityTab')">
+                                    <i class="fas fa-user-shield"></i> Account & Security
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-main">
+                            <!-- Account Settings Tab -->
+                            <div id="accountTab" class="settings-tab-content active">
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-user-cog"></i> Account Information</h3>
+                                    <div class="settings-form">
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Display Name</label>
+                                            <input type="text" class="form-control mobile-font-smaller" value="Teacher Name" id="settingsDisplayName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Email Address</label>
+                                            <input type="email" class="form-control mobile-font-smaller" value="teacher@example.com" id="settingsEmail">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Department</label>
+                                            <input type="text" class="form-control mobile-font-smaller" value="Mathematics" id="settingsDepartment">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-key"></i> Change Password</h3>
+                                    <div class="settings-form">
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Current Password</label>
+                                            <input type="password" class="form-control mobile-font-smaller" id="currentPassword">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">New Password</label>
+                                            <input type="password" class="form-control mobile-font-smaller" id="newPassword">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Confirm New Password</label>
+                                            <input type="password" class="form-control mobile-font-smaller" id="confirmPassword">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Tab -->
+                            <div id="notificationsTab" class="settings-tab-content">
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-bell"></i> Notification Preferences</h3>
+                                    <div class="settings-form">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifEmail"> Email notifications
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifAssignmentsSettings"> Assignment submissions
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifStudentQuestions"> Student questions
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifGradeUpdates"> Grade updates
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="notifSystemAnnouncements"> System announcements
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-calendar"></i> Notification Schedule</h3>
+                                    <div class="settings-form">
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Daily Digest Time</label>
+                                            <select class="form-control mobile-font-smaller" id="digestTime">
+                                                <option>8:00 AM</option>
+                                                <option selected>9:00 AM</option>
+                                                <option>10:00 AM</option>
+                                                <option>5:00 PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Privacy Tab -->
+                            <div id="privacyTab" class="settings-tab-content">
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-shield-alt"></i> Privacy Settings</h3>
+                                    <div class="settings-form">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="privacyShowProfile"> Show my profile to students
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="privacyAllowContact"> Allow students to contact me
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" id="privacyShareLessons"> Share my lessons with other teachers
+                                            </label>
+                                            <label class="checkbox-option mobile-font-smaller">
+                                                <input type="checkbox" checked id="privacyUsageData"> Collect anonymous usage data
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-download"></i> Data Management</h3>
+                                    <div class="settings-form">
+                                        <button class="btn btn-secondary mobile-font-smaller" onclick="exportAllData()">
+                                            <i class="fas fa-file-export"></i> Export All Data
+                                        </button>
+                                        <button class="btn btn-secondary mobile-font-smaller" onclick="requestDataDeletion()">
+                                            <i class="fas fa-trash"></i> Request Data Deletion
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appearance Tab -->
+                            <div id="appearanceTab" class="settings-tab-content">
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-palette"></i> Theme Settings</h3>
+                                    <div class="settings-form">
+                                        <div class="theme-options">
+                                            <div class="theme-option" onclick="setTheme('light')">
+                                                <div class="theme-preview light">
+                                                    <div class="theme-header"></div>
+                                                    <div class="theme-content"></div>
+                                                </div>
+                                                <span class="mobile-font-smaller">Light Mode</span>
+                                            </div>
+                                            <div class="theme-option" onclick="setTheme('dark')">
+                                                <div class="theme-preview dark">
+                                                    <div class="theme-header"></div>
+                                                    <div class="theme-content"></div>
+                                                </div>
+                                                <span class="mobile-font-smaller">Dark Mode</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-font"></i> Display Settings</h3>
+                                    <div class="settings-form">
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Font Size</label>
+                                            <select class="form-control mobile-font-smaller" onchange="changeFontSize(this.value)" id="fontSize">
+                                                <option value="small">Small</option>
+                                                <option value="medium" selected>Medium</option>
+                                                <option value="large">Large</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller"><i class="fas fa-text-height"></i> Adjust Font Size</label>
+                                            <div class="font-size-controls">
+                                                <button class="btn-icon small mobile-font-smaller" onclick="decreaseFontSize()" title="Decrease Font Size">
+                                                    <i class="fas fa-minus"></i> Smaller
+                                                </button>
+                                                <button class="btn-icon small mobile-font-smaller" onclick="resetFontSize()" title="Reset Font Size">
+                                                    <i class="fas fa-redo"></i> Normal
+                                                </button>
+                                                <button class="btn-icon small mobile-font-smaller" onclick="increaseFontSize()" title="Increase Font Size">
+                                                    <i class="fas fa-plus"></i> Larger
+                                                </button>
+                                            </div>
+                                            <div class="font-size-preview">
+                                                <p style="margin-top: 10px;" id="fontSizePreviewText" class="mobile-font-smaller">
+                                                    This is how the text will look with the current font size.
+                                                </p>
+                                                <div class="font-size-indicator mobile-font-smaller">
+                                                    Current font size: <span id="currentFontSizeValue">100%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller">Density</label>
+                                            <select class="form-control mobile-font-smaller" onchange="changeDensity(this.value)" id="density">
+                                                <option value="compact">Compact</option>
+                                                <option value="normal" selected>Normal</option>
+                                                <option value="comfortable">Comfortable</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ACCOUNT & SECURITY TAB WITH LOGOUT (ADDED) -->
+                            <div id="accountSecurityTab" class="settings-tab-content">
+                                <div class="settings-section mobile-compact">
+                                    <h3 class="mobile-font-small"><i class="fas fa-user-shield"></i> Account & Security</h3>
+                                    <div class="settings-form">
+                                        <div class="account-status">
+                                            <div class="status-indicator active">
+                                                <i class="fas fa-circle"></i>
+                                                <span class="mobile-font-smaller">Currently logged in as <strong id="currentUserEmail" class="mobile-font-small">teacher@example.com</strong></span>
+                                            </div>
+                                            <p class="session-info mobile-font-smaller">
+                                                <i class="fas fa-clock"></i> 
+                                                Session started: <span id="sessionTime" class="mobile-font-smaller">Today, 9:41 AM</span>
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label mobile-font-smaller"><i class="fas fa-sign-out-alt"></i> Logout</label>
+                                            <div class="logout-section">
+                                                <p class="mobile-font-smaller">End your current session and return to the login page.</p>
+                                                <button class="btn btn-logout mobile-font-smaller" onclick="showLogoutConfirmation()">
+                                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                                </button>
+                                                <p class="logout-note mobile-font-smaller">
+                                                    <i class="fas fa-info-circle"></i> 
+                                                    You'll need to log in again to access your dashboard.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Navigation -->
+    <!-- Footer Navigation -->
+<footer class="footer-nav">
+    <div class="footer-nav-content">
+        <a href="#" class="footer-nav-item active" onclick="showDashboard(event)">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="mobile-font-smaller">Dashboard</span>
+        </a>
+        <a href="#" class="footer-nav-item" onclick="showLessonDashboard(event)">
+            <i class="fas fa-book-open"></i>
+            <span class="mobile-font-smaller">Lessons</span>
+        </a>
+        <button class="footer-hamburger" id="footerHamburgerBtn">
+            <i class="fas fa-bars"></i>
+            <span class="mobile-font-smaller">Menu</span>
+        </button>
+        <a href="#" class="footer-nav-item" onclick="showQuizDashboard(event)">
+            <i class="fas fa-question-circle"></i>
+            <span class="mobile-font-smaller">Quizzes</span>
+        </a>
+        <a href="#" class="footer-nav-item" onclick="showProfileDashboard(event)">
+            <i class="fas fa-user"></i>
+            <span class="mobile-font-smaller">Profile</span>
+        </a>
+    </div>
+</footer>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-panel" id="mobileMenuPanel">
+        <div class="mobile-menu-header mobile-compact">
+            <h3 class="mobile-font-small"><i class="fas fa-bars"></i> Navigation Menu</h3>
+            <button class="close-menu-btn" id="closeMenuBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-grid">
+            <a href="#" class="mobile-menu-item" onclick="showDashboard(event)">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="mobile-font-smaller">Dashboard</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showLessonDashboard(event)">
+                <i class="fas fa-book-open"></i>
+                <span class="mobile-font-smaller">Lessons</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showFeedbackDashboard(event)">
+                <i class="fas fa-comment-dots"></i>
+                <span class="mobile-font-smaller">Feedback</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showQuizDashboard(event)">
+                <i class="fas fa-question-circle"></i>
+                <span class="mobile-font-smaller">Quizzes</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showPracticeDashboard(event)">
+                <i class="fas fa-dumbbell"></i>
+                <span class="mobile-font-smaller">Practice</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showSettingsDashboard(event)">
+                <i class="fas fa-cog"></i>
+                <span class="mobile-font-smaller">Settings</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showProfileDashboard(event)">
+                <i class="fas fa-user"></i>
+                <span class="mobile-font-smaller">Profile</span>
+            </a>
+            <!-- LOGOUT IN MOBILE MENU -->
+            <a href="#" class="mobile-menu-item logout-mobile" onclick="showLogoutConfirmation(); closeMobileMenu();">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="mobile-font-smaller">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Feedback Detail Modal -->
+<div id="feedbackDetailModal" class="modal">
+    <div class="modal-backdrop" onclick="closeFeedbackDetailModal()"></div>
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header mobile-compact">
+            <h3 class="mobile-font-small"><i class="fas fa-comment-dots"></i> Feedback Details</h3>
+            <button class="modal-close" onclick="closeFeedbackDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="feedback-detail-container" id="feedbackDetailContainer">
+                <!-- Content will be loaded dynamically -->
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-pulse fa-3x" style="color: var(--primary);"></i>
+                    <p style="margin-top: 20px;">Loading feedback details...</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary mobile-font-smaller" onclick="closeFeedbackDetailModal()">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <button class="btn btn-primary mobile-font-smaller" onclick="replyToCurrentFeedback()" id="detailReplyBtn">
+                <i class="fas fa-reply"></i> Reply
+            </button>
+            <button class="btn btn-success mobile-font-smaller" onclick="markCurrentFeedbackResolved()" id="detailResolveBtn">
+                <i class="fas fa-check-circle"></i> Mark Resolved
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- NEW: Logout Confirmation Modal (FIXED) -->
+<div id="logoutConfirmationModal" class=" modal confirmation-modal">
+    <div class="modal-backdrop" onclick="closeLogoutConfirmation()"></div>
+    <div class="modal-content confirmation-content">
+        <div class="modal-header mobile-compact">
+            <h3 class="mobile-font-small"><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
+            <button class="modal-close" onclick="closeLogoutConfirmation()">&times;</button>
+        </div>
+        <div class="confirmation-body">
+            <div class="confirmation-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h3 class="confirmation-title mobile-font-small">Are you sure you want to logout?</h3>
+            
+            <p class="confirmation-message mobile-font-smaller">
+                You are about to log out from your MathHub Teacher Dashboard account. 
+                All unsaved changes will be lost.
+            </p>
+            
+            <div class="confirmation-details mobile-font-smaller">
+                <p><i class="fas fa-user"></i> <strong>Account:</strong> <span id="confirmationAccountEmail">teacher@example.com</span></p>
+                <p><i class="fas fa-clock"></i> <strong>Session started:</strong> <span id="confirmationSessionTime">Today, 9:41 AM</span></p>
+                <p><i class="fas fa-chalkboard-teacher"></i> <strong>Active subjects:</strong> 3 subjects</p>
+            </div>
+            
+            <div class="logout-options">
+                <div class="logout-option">
+                    <input type="checkbox" id="clearLocalData" checked>
+                    <label for="clearLocalData" class="mobile-font-smaller">Clear local data and cache</label>
+                </div>
+                <div class="logout-option">
+                    <input type="checkbox" id="rememberLogout" checked>
+                    <label for="rememberLogout" class="mobile-font-smaller">Remember logout preference</label>
+                </div>
+            </div>
+            
+            <div class="confirmation-buttons">
+                <button class="btn-cancel-logout mobile-font-smaller" onclick="closeLogoutConfirmation()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn-confirm-logout mobile-font-smaller" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Yes, Logout
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== UPDATED: Create Lesson Modal with Lesson-Module-Topic Selection ===== -->
+<div id="createLessonModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus-circle"></i> Create New Lesson</h3>
+            <button class="close-btn" onclick="closeCreateLessonModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h4>Basic Information</h4>
+                
+                <div class="form-group">
+                    <label>Lesson Title <span class="required">*</span></label>
+                    <input type="text" id="createLessonTitle" class="form-control" 
+                           placeholder="e.g., Introduction to Polynomials" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="createLessonDescription" class="form-control" 
+                              rows="3" placeholder="Brief description of the lesson"></textarea>
+                </div>
+            </div>
+
+            <!-- Lesson Structure Selection -->
+            <div class="form-section" style="background: #f8f9fa; border-left: 3px solid #7a0000;">
+                <h4 style="color: #7a0000;"><i class="fas fa-sitemap"></i> Lesson Location</h4>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 15px;">
+                    Select the topic where this lesson will be stored in MySQL database
+                </p>
+                
+                <!-- Lesson Selection -->
+<div class="form-group">
+    <label>Lesson <span class="required">*</span></label>
+    <select id="createLessonLesson" class="form-control" onchange="loadModulesForLesson()" required>
+        <option value="">-- Select Lesson --</option>
+        <option value="2">PolyLearn</option>
+        <option value="3">FactoLearn</option>
+        <option value="2">MathEase</option>
+    </select>
+</div>
+                
+                <!-- Module Selection (depends on Lesson) -->
+                <div class="form-group">
+                    <label>Module <span class="required">*</span></label>
+                    <select id="createLessonModule" class="form-control" onchange="loadTopicsForModule()" required>
+                        <option value="">-- Select Module --</option>
+                    </select>
+                </div>
+                
+                <!-- Topic Selection (depends on Module) -->
+                <div class="form-group">
+                    <label>Topic <span class="required">*</span> <span style="color: #7a0000; font-weight: bold;">REQUIRED</span></label>
+                    <select id="createLessonTopic" class="form-control" required>
+                        <option value="">-- Select Topic --</option>
+                    </select>
+                    <small class="text-muted">This is where the lesson will be stored in the database</small>
+                </div>
+            </div>
+            
+            <!-- Content Type Selection -->
+            <div class="form-section">
+                <h4>Content</h4>
+                
+                <div class="content-type-buttons" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button type="button" class="btn" id="videoTypeBtn" onclick="showContentSection('video')">
+                        <i class="fas fa-video"></i> Video
+                    </button>
+                    <button type="button" class="btn" id="pdfTypeBtn" onclick="showContentSection('pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button type="button" class="btn" id="textTypeBtn" onclick="showContentSection('text')">
+                        <i class="fas fa-file-alt"></i> Text
+                    </button>
+                </div>
+                
+                <!-- Video Content Section -->
+                <div id="videoContentSection" class="content-section">
+                    <div class="form-group">
+                        <label>YouTube URL (Optional)</label>
+                        <input type="url" id="videoYoutubeUrl" class="form-control" 
+                               placeholder="https://youtube.com/watch?v=...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Or Upload Video File</label>
+                        <div class="upload-area" id="videoUploadArea" onclick="triggerVideoUpload()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag and drop</p>
+                            <small>MP4, WebM, OGG (Max 500MB)</small>
+                            <input type="file" id="videoFileInput" accept="video/*" 
+                                   style="display: none;" onchange="handleVideoFileSelect(event)">
+                        </div>
+                        
+                        <div id="videoFileInfo" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                                <span id="videoFileName"></span>
+                                <span id="videoFileSize" style="color: #666;"></span>
+                                <button type="button" class="btn-icon small" onclick="removeVideoFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="videoPreviewContainer" style="display: none; margin-top: 10px;">
+                            <video id="videoPreview" controls style="width: 100%; max-height: 200px;"></video>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PDF Content Section -->
+                <div id="pdfContentSection" class="content-section" style="display: none;">
+                    <div class="form-group">
+                        <label>Upload PDF File</label>
+                        <div class="upload-area" onclick="triggerPdfUpload()">
+                            <i class="fas fa-file-pdf"></i>
+                            <p>Click to upload PDF</p>
+                            <small>PDF files only (Max 50MB)</small>
+                            <input type="file" id="pdfFileInput" accept=".pdf" 
+                                   style="display: none;" onchange="handlePdfFileSelect(event)">
+                        </div>
+                        
+                        <div id="pdfFileInfo" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                                <span id="pdfFileName"></span>
+                                <span id="pdfFileSize" style="color: #666;"></span>
+                                <button type="button" class="btn-icon small" onclick="removePdfFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text Content Section -->
+                <div id="textContentSection" class="content-section" style="display: none;">
+                    <div class="form-group">
+                        <label>Text Content</label>
+                        <textarea id="textContentInput" class="form-control" 
+                                  rows="8" placeholder="Enter your lesson content here..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Or Upload Text File</label>
+                        <div class="upload-area-small" onclick="triggerTextFileUpload()">
+                            <i class="fas fa-file-alt"></i> Choose File
+                            <input type="file" id="textFileInput" accept=".txt,.md" 
+                                   style="display: none;" onchange="handleTextFileSelect(event)">
+                        </div>
+                        
+                        <div id="textFileInfo" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                                <span id="textFileName"></span>
+                                <span id="textFileSize" style="color: #666;"></span>
+                                <button type="button" class="btn-icon small" onclick="removeTextFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeCreateLessonModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="createNewLesson()">
+                <i class="fas fa-save"></i> Create Lesson
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Edit Lesson Modal -->
+    <div id="editLessonModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Lesson</h3>
+                <button class="close-btn" onclick="closeEditLessonModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editLessonId">
+                
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h4>Basic Information</h4>
+                    
+                    <div class="form-group">
+                        <label>Lesson Title <span class="required">*</span></label>
+                        <input type="text" id="editLessonTitle" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editLessonDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select id="editLessonSubject" class="form-control">
+                            <option value="polynomial">PolyLearn</option>
+                            <option value="factorial">FactoLearn</option>
+                            <option value="mdas">MathEase</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editLessonStatus" class="form-control">
+                            <option value="1">Active (Published)</option>
+                            <option value="0">Inactive (Draft)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Current Content Info -->
+                <div class="form-section" style="background: #f8f9fa;">
+                    <h4>Current Content</h4>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <strong>Type:</strong> 
+                        <span id="editCurrentContentType" class="badge badge-info">text</span>
+                    </div>
+                    
+                    <div id="editExistingVideoInfo" style="display: none; margin-bottom: 10px;">
+                        <strong>Video:</strong> 
+                        <span id="editExistingVideoFilename"></span>
+                        <button type="button" class="btn-icon small" onclick="clearEditExistingVideo()" 
+                                style="color: #dc3545; margin-left: 10px;" title="Remove video">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <strong>File:</strong> 
+                        <span id="editCurrentContentFilename">No file</span>
+                    </div>
+                </div>
+                
+                <!-- Content Update Section -->
+                <div class="form-section">
+                    <h4>Update Content (Optional)</h4>
+                    
+                    <div class="content-type-buttons" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button type="button" class="btn" id="editVideoTypeBtn" onclick="showEditContentSection('video')">
+                            <i class="fas fa-video"></i> Video
+                        </button>
+                        <button type="button" class="btn" id="editTextTypeBtn" onclick="showEditContentSection('text')">
+                            <i class="fas fa-file-alt"></i> Text
+                        </button>
+                    </div>
+                    
+                    <!-- Edit Video Section -->
+                    <div id="editVideoContentSection" class="content-section" style="display: none;">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="keepExistingVideo" checked onchange="toggleVideoReplaceMode()">
+                                Keep existing video
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>New YouTube URL</label>
+                            <input type="url" id="editVideoYoutubeUrl" class="form-control" 
+                                   placeholder="https://youtube.com/watch?v=...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Or Upload New Video</label>
+                            <div class="upload-area" id="editVideoUploadArea" onclick="triggerEditVideoUpload()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload new video</p>
+                                <small>MP4, WebM, OGG (Max 500MB)</small>
+                                <input type="file" id="editVideoFileInput" accept="video/*" 
+                                       style="display: none;" onchange="handleEditVideoFileSelect(event)">
+                            </div>
+                            
+                            <div id="editNewVideoIndicator" style="display: none; margin-top: 10px;">
+                                <span class="badge badge-success">New video selected: <span id="editNewVideoFilename"></span></span>
+                                <button type="button" class="btn-icon small" onclick="cancelEditNewVideo()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div id="editVideoPreviewContainer" style="display: none; margin-top: 10px;">
+                                <video id="editVideoPreview" controls style="width: 100%; max-height: 200px;"></video>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit Text Section -->
+                    <div id="editTextContentSection" class="content-section" style="display: none;">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="keepExistingText" checked onchange="toggleTextReplaceMode()">
+                                Keep existing text
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>New Text Content</label>
+                            <textarea id="editTextContentInput" class="form-control" rows="8" 
+                                      placeholder="Enter new lesson content here..." disabled></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Or Upload Text File</label>
+                            <div class="upload-area-small" onclick="triggerEditTextFileUpload()">
+                                <i class="fas fa-file-alt"></i> Choose File
+                                <input type="file" id="editTextFileInput" accept=".txt,.md" 
+                                       style="display: none;" disabled onchange="handleEditTextFileSelect(event)">
+                            </div>
+                            
+                            <div id="editNewTextIndicator" style="display: none; margin-top: 10px;">
+                                <span class="badge badge-success">New text file: <span id="editNewTextFilename"></span></span>
+                                <span id="editNewTextFileSize" style="margin-left: 5px;"></span>
+                                <button type="button" class="btn-icon small" onclick="cancelEditNewText()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditLessonModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditedLesson()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Viewing Lessons -->
+    <div id="questionModal" class="modal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header mobile-compact">
+                <h3 class="mobile-font-small"><i class="fas fa-list"></i> Lesson Management</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary mobile-font-smaller" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary mobile-font-smaller" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Reply Modal -->
+    <div id="feedbackReplyModal" class="modal">
+        <div class="modal-backdrop" onclick="closeFeedbackReplyModal()"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header mobile-compact">
+                <h3 class="mobile-font-small"><i class="fas fa-reply"></i> Reply to Feedback</h3>
+                <button class="modal-close" onclick="closeFeedbackReplyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="feedback-section mobile-compact">
+                    <!-- Student Info -->
+                    <div class="student-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="student-avatar large" id="replyStudentAvatar" style="width: 50px; height: 50px; border-radius: 50%; background: #7a0000; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                AN
+                            </div>
+                            <div>
+                                <h4 id="replyStudentName" class="mobile-font-small">Student Name</h4>
+                                <p class="mobile-font-smaller" style="color: #666;" id="replyStudentEmail">student@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Original Feedback -->
+                    <div class="form-group">
+                        <label class="form-label mobile-font-smaller"><i class="fas fa-comment"></i> Original Feedback</label>
+                        <div class="feedback-preview" id="feedbackPreview" style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-top: 5px;">
+                            Loading feedback...
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Display -->
+                    <div class="form-group" id="replyRatingContainer" style="display: none;">
+                        <label class="form-label mobile-font-smaller"><i class="fas fa-star"></i> Rating</label>
+                        <div class="rating-display" id="replyRating" style="color: #FFC107; font-size: 1.2rem;"></div>
+                    </div>
+                    
+                    <!-- Lesson Info -->
+                    <div class="form-group" id="replyLessonContainer" style="display: none;">
+                        <label class="form-label mobile-font-smaller"><i class="fas fa-book-open"></i> Related Lesson</label>
+                        <p class="mobile-font-smaller" id="replyLessonTitle"></p>
+                    </div>
+                    
+                    <!-- Teacher Response -->
+                    <div class="form-group">
+                        <label class="form-label mobile-font-smaller"><i class="fas fa-reply"></i> Your Response</label>
+                        <textarea class="form-control large mobile-font-smaller" placeholder="Type your response here..." id="feedbackResponse" rows="4"></textarea>
+                    </div>
+                    
+                    <!-- Quick Response Templates -->
+                    <div class="quick-templates">
+                        <p class="mobile-font-smaller" style="margin-bottom: 8px;"><i class="fas fa-bolt"></i> Quick Responses:</p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-sm btn-outline" onclick="insertQuickResponse('thank you')">Thank you!</button>
+                            <button class="btn btn-sm btn-outline" onclick="insertQuickResponse('will fix')">We'll fix this</button>
+                            <button class="btn btn-sm btn-outline" onclick="insertQuickResponse('great suggestion')">Great suggestion!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary mobile-font-smaller" onclick="closeFeedbackReplyModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-success mobile-font-smaller" onclick="markFeedbackResolved(currentFeedbackId)" id="resolveBtn">
+                    <i class="fas fa-check-circle"></i> Mark Resolved
+                </button>
+                <button class="btn btn-primary mobile-font-smaller" onclick="sendFeedbackResponse()" id="sendReplyBtn">
+                    <i class="fas fa-paper-plane"></i> Send Response
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Detail Modal -->
+    <div id="feedbackDetailModal" class="modal">
+        <div class="modal-backdrop" onclick="closeFeedbackDetailModal()"></div>
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header mobile-compact">
+                <h3 class="mobile-font-small"><i class="fas fa-comment-dots"></i> Feedback Details</h3>
+                <button class="modal-close" onclick="closeFeedbackDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="feedback-detail-container" id="feedbackDetailContainer">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary mobile-font-smaller" onclick="closeFeedbackDetailModal()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button class="btn btn-primary mobile-font-smaller" onclick="replyToCurrentFeedback()" id="detailReplyBtn">
+                    <i class="fas fa-reply"></i> Reply
+                </button>
+                <button class="btn btn-success mobile-font-smaller" onclick="markCurrentFeedbackResolved()" id="detailResolveBtn">
+                    <i class="fas fa-check-circle"></i> Mark Resolved
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <div class="notification-content">
+            <h4 class="mobile-font-small">Success</h4>
+            <p class="mobile-font-smaller">Operation completed successfully.</p>
+        </div>
+    </div>
+
+    <script src="teacher-dashboard.js"></script>
+</body>
+</html>

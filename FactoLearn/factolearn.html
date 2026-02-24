@@ -1,0 +1,3358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathHub | Complete Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="factolearn.css">
+    <style>
+        /* Additional styles for the lesson dashboard container */
+        .lesson-dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .lesson-tools-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 1024px) {
+            .lesson-tools-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .learning-tools-box, .quick-tools-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+        
+        .tools-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .tools-header h3 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+        
+        .tools-header i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .tools-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .tool-item-compact {
+            background: var(--sidebar-bg);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tool-item-compact:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--sidebar-bg), #f0f7ff);
+        }
+        
+        .tool-item-compact .tool-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .tool-item-compact .tool-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .tool-item-compact .tool-desc {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            line-height: 1.3;
+        }
+        
+        .tools-description {
+            margin-top: 15px;
+            padding: 10px;
+            background: var(--sidebar-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .tools-description p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .tool-active {
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, #f0f7ff, #e6f0ff);
+        }
+        
+        /* Modal for expanded tool view */
+        .tool-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .tool-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tool-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tool-modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-tool-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .tool-modal-body {
+            padding: 20px;
+        }
+        
+        .tool-status {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .tool-instructions {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .tool-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Quick tools specific styling */
+        .quick-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+        }
+        
+        .quick-tool-item {
+            background: var(--sidebar-bg);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .quick-tool-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .quick-tool-item:hover .quick-tool-icon {
+            color: white;
+        }
+        
+        .quick-tool-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .quick-tool-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Progress indicators */
+        .tool-progress {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .progress-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 5px;
+        }
+        
+        .progress-dot.active {
+            background: var(--primary);
+        }
+        
+        /* Tool categories */
+        .tool-category {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            padding-left: 5px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        /* Continue Learning - Updated Styles */
+        .continue-learning-module {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .module-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+        
+        .module-title i {
+            color: var(--primary);
+        }
+        
+        .module-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-in-progress {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-not-started {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+            border: 1px solid #e9ecef;
+        }
+        
+        .status-completed {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .module-progress {
+            margin-bottom: 25px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--sidebar-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #4a6bff);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .module-lessons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--sidebar-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .lesson-item:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--sidebar-bg), #f8f9ff);
+        }
+        
+        .lesson-item.completed {
+            background: linear-gradient(135deg, #e8f5e9, #d4edda);
+            border-color: #c3e6cb;
+        }
+        
+        .lesson-item.current {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-color: #90caf9;
+        }
+        
+        .lesson-item.locked {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-color: #bdbdbd;
+            opacity: 0.7;
+        }
+        
+        .lesson-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .lesson-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .lesson-item.completed .lesson-icon {
+            background: #4caf50;
+        }
+        
+        .lesson-item.current .lesson-icon {
+            background: #2196f3;
+        }
+        
+        .lesson-item.locked .lesson-icon {
+            background: #9e9e9e;
+        }
+        
+        .lesson-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        
+        .lesson-duration {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .lesson-actions button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 107, 255, 0.3);
+        }
+        
+        .review-btn {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+        }
+        
+        .review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+        
+        .locked-btn {
+            background: #9e9e9e;
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        /* Loading states */
+        .loading-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .loading-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .no-lessons {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .no-lessons i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #e74c3c;
+        }
+        
+        /* Module Dashboard - Updated Styles */
+        #module-page-container {
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+        }
+        
+        .module-header {
+            background: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        
+        .logo-accent {
+            color: var(--primary);
+        }
+        
+        .lesson-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            padding: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 350px;
+            }
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 25px 25px 0;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        
+        .card-subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        .lesson-content {
+            padding: 25px;
+        }
+        
+        .media-container {
+            background: #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .media-header {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .media-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .refresh-video-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .refresh-video-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 400px;
+            background: #000;
+        }
+        
+        #lessonVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-info {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.1);
+            color: #b0b0b0;
+            font-size: 0.85rem;
+        }
+        
+        .video-info p {
+            margin: 5px 0;
+        }
+        
+        .step-container {
+            margin-bottom: 30px;
+        }
+        
+        .step-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .step-title span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .audio-btn {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .audio-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 107, 255, 0.3);
+        }
+        
+        .audio-btn.playing {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+        
+        .step-content {
+            padding-left: 15px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .math-example {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+        
+        .steps {
+            list-style-type: decimal;
+            padding-left: 20px;
+            margin-top: 15px;
+        }
+        
+        .steps li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .practice-problem {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px dashed var(--border-color);
+        }
+        
+        .problem-statement {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .progress-learning-tool {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .lesson-progress-section {
+            margin-bottom: 25px;
+        }
+        
+        .lesson-progress-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .progress-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+        
+        .learning-stats {
+            margin-bottom: 25px;
+        }
+        
+        .learning-stats h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .stat-content {
+            flex-grow: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .module-progress-section {
+            margin-bottom: 25px;
+        }
+        
+        .module-progress-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .module-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .module-item:hover {
+            background: var(--sidebar-bg);
+        }
+        
+        .module-item.current {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 1px solid #90caf9;
+        }
+        
+        .module-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-color);
+        }
+        
+        .module-name i {
+            font-size: 1.2rem;
+        }
+        
+        .module-name i.completed {
+            color: #4caf50;
+        }
+        
+        .module-name i.in-progress {
+            color: #2196f3;
+        }
+        
+        .module-name i.locked {
+            color: #9e9e9e;
+        }
+        
+        .module-percentage {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .daily-goals {
+            margin-bottom: 25px;
+        }
+        
+        .daily-goals h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .goal-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .goal-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .goal-content {
+            flex-grow: 1;
+        }
+        
+        .goal-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        
+        .goal-status {
+            font-size: 0.85rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .goal-status.completed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .goal-status.in-progress {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        /* Quiz Popup Styles */
+        .quiz-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        
+        .quiz-popup-container {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            animation: popupSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .quiz-popup-header {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .quiz-popup-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-quiz-popup {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-quiz-popup:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .quiz-popup-body {
+            padding: 30px;
+        }
+        
+        .quiz-meta-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+        }
+        
+        .quiz-meta-item i {
+            color: var(--primary);
+        }
+        
+        .quiz-instructions {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .quiz-instructions h4 {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quiz-instructions ul {
+            margin: 10px 0 0 20px;
+            padding: 0;
+        }
+        
+        .quiz-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .quiz-question-container {
+            margin-bottom: 30px;
+        }
+        
+        .quiz-question {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .quiz-option {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+        
+        .option-letter {
+            width: 30px;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-color);
+            flex-shrink: 0;
+            transition: all 0.1s ease;
+        }
+        
+        .quiz-option.selected .option-letter {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option-text {
+            flex-grow: 1;
+        }
+        
+        .quiz-results-popup {
+            text-align: center;
+        }
+        
+        .quiz-results-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .quiz-score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .quiz-results-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .result-detail {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .result-detail-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .result-detail-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .quiz-restart-btn {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto 0;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+
+        .quiz-popup-footer {
+            padding: 20px 30px;
+            background: #f8f9ff;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .quiz-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .quiz-popup-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Lesson Navigation Styles */
+        .lesson-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .lesson-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .lesson-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .nav-prev {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .nav-prev:not(:disabled):hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-next {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+        }
+        
+        .nav-next:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+        
+        /* Complete lesson button state */
+        .lesson-completed {
+            background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+            cursor: default !important;
+        }
+        
+        .lesson-completed:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Practice Page Specific Styles */
+        .topic-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .topic-card.unlocked {
+            border-color: #27ae60;
+            cursor: pointer;
+        }
+        
+        .topic-card.locked {
+            border-color: #bdc3c7;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .topic-card:hover:not(.locked) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .topic-icon {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+        
+        .topic-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .topic-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .topic-status.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .topic-status.locked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .topic-description {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .topic-progress {
+            margin-top: 15px;
+        }
+        
+        .topic-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-topic-action {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-start-practice {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+        }
+        
+        .btn-continue-topic {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-unlock-topic:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .topic-card.locked .locked-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .locked-icon {
+            font-size: 40px;
+            color: #95a5a6;
+            margin-bottom: 15px;
+        }
+        
+        .locked-message {
+            text-align: center;
+        }
+        
+        .locked-message h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .locked-message p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .no-topic-selected {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        
+        .no-topic-selected i {
+            font-size: 50px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .exercise-display {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .topic-badge {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .exercise-timer {
+            background: #fff3cd;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #856404;
+        }
+        
+        .exercise-problem {
+            margin-bottom: 30px;
+        }
+        
+        .math-expression {
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .multiple-choice-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        @media (min-width: 768px) {
+            .multiple-choice-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            border-color: var(--primary);
+        }
+        
+        .option input[type="radio"] {
+            transform: scale(1.2);
+        }
+        
+        .hint {
+            background: #fff3cd;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .solution-input {
+            margin-top: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feedback-area {
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .feedback-message {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .feedback-message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .feedback-message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback-icon {
+            font-size: 2rem;
+        }
+        
+        .feedback-text {
+            flex-grow: 1;
+        }
+        
+        .solution-steps {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .feedback-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), #4a6bff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+        
+        /* Rating stars styles */
+        .rating {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .rating .star {
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .rating .star:hover,
+        .rating .star.rated {
+            color: #ffc107;
+        }
+        
+        .rating .star:hover ~ .star {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="hidden">
+            <div class="container">
+                <!-- Dashboard Content -->
+                <div class="dashboard-container">
+                    <!-- Welcome Card -->
+                    <section class="card welcome-card">
+                        <div class="welcome-header">
+                            <h1 class="welcome-title" id="dashboardWelcomeTitle">Welcome!</h1>
+                            <div class="date-display" id="currentDate">Loading date...</div>
+                        </div>
+                        
+                        <div class="student-info">
+                            <div class="student-avatar-large" id="userInitial">U</div>
+                            <div class="student-details">
+                                <h2 class="student-name" id="dashboardUserName">Welcome to <span>FactoLearn!</span></h2>
+                                <p style="color: var(--text-light); margin-bottom: 15px;" id="dashboardUserMessage">
+                                    You're making excellent progress in your factorial journey. Keep up the great work!
+                                </p>
+                                <div class="achievement-badge" id="userAchievementBadge">
+                                    <i class="fas fa-medal"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Progress Summary Card -->
+<section class="card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-chart-bar"></i> Progress Summary
+        </h2>
+        <p class="card-subtitle">Your learning progress this week</p>
+    </div>
+    
+    <div class="progress-items">
+        <!-- Lessons Completed -->
+        <div class="progress-item">
+            <div class="item-left">
+                <div class="item-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div>
+                    <h3>Lessons Completed</h3>
+                    <p>Total polynomial lessons finished</p>
+                </div>
+            </div>
+            <div class="item-value" id="lessonsCount">0<span class="item-unit">/0</span></div>
+        </div>
+        
+        <!-- Practice Exercises -->
+        <div class="progress-item">
+            <div class="item-left">
+                <div class="item-icon">
+                    <i class="fas fa-pen-fancy"></i>
+                </div>
+                <div>
+                    <h3>Practice Exercises</h3>
+                    <p>Exercises solved correctly</p>
+                </div>
+            </div>
+            <div class="item-value" id="exercisesCount">0<span class="item-unit">/0</span></div>
+        </div>
+        
+        <!-- Quiz Game Score -->
+        <div class="progress-item">
+            <div class="item-left">
+                <div class="item-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                    <h3>Quiz Game Score</h3>
+                    <p>Your high score in polynomial games</p>
+                </div>
+            </div>
+            <div class="item-value" id="quizScore">0<span class="item-unit">points</span></div>
+        </div>
+        
+        <!-- Average Time Spent -->
+        <div class="progress-item">
+            <div class="item-left">
+                <div class="item-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <h3>Average Time Spent</h3>
+                    <p>Daily average learning time</p>
+                </div>
+            </div>
+            <div class="item-value" id="avgTime">0<span class="item-unit">minutes/day</span></div>
+        </div>
+    </div>
+</section>
+
+                    <!-- Continue Learning Card - DATABASE DRIVEN -->
+                    <section class="card full-width-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-play-circle"></i> Continue Learning
+                            </h2>
+                            <p class="card-subtitle">Pick up where you left off</p>
+                        </div>
+                        
+                        <!-- Continue Learning Module - Loaded dynamically from database -->
+                        <div id="continueLearningContainer" class="continue-learning-module">
+                            <div class="loading-container">
+                                <div class="loading-text">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading lessons from database...
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- NEW: Lesson Dashboard Container with Learning Tools and Quick Tools -->
+                    <!-- Lesson Dashboard Container with Learning Tools and Quick Tools -->
+<section class="card full-width-card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-tools"></i> Lesson Dashboard
+        </h2>
+        <p class="card-subtitle">Access learning tools and quick utilities for your lessons</p>
+    </div>
+    
+    <div class="lesson-dashboard-container">
+        <!-- Learning Tools Section -->
+        <div class="learning-tools-box">
+            <div class="tools-header">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Learning Tools</h3>
+            </div>
+            
+            <div class="tools-grid-compact">
+                <!-- Calculator Tool -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('calculator')">
+                    <div class="tool-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="tool-name">Calculator</div>
+                    <div class="tool-desc">Advanced math calculator</div>
+                </div>
+                
+                <!-- Graph Tools -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('graph')">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="tool-name">Graph Tools</div>
+                    <div class="tool-desc">Visualize functions</div>
+                </div>
+                
+                <!-- Formula Sheet -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('formula')">
+                    <div class="tool-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="tool-name">Formula Sheet</div>
+                    <div class="tool-desc">Quick references</div>
+                </div>
+                
+                <!-- Whiteboard -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('whiteboard')">
+                    <div class="tool-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div class="tool-name">Whiteboard</div>
+                    <div class="tool-desc">Draw and solve</div>
+                </div>
+                
+                <!-- Notepad -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('notepad')">
+                    <div class="tool-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <div class="tool-name">Notepad</div>
+                    <div class="tool-desc">Take notes</div>
+                </div>
+                
+                <!-- Study Timer -->
+                <div class="tool-item-compact" onclick="window.toolManager.openTool('timer')">
+                    <div class="tool-icon">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <div class="tool-name">Study Timer</div>
+                    <div class="tool-desc">Track study time</div>
+                </div>
+            </div>
+            
+            <div class="tools-description">
+                <p><i class="fas fa-info-circle"></i> Learning tools help you understand concepts better with interactive features.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+                    <!-- Quick Actions -->
+                    <section class="card full-width-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-bolt"></i> Quick Actions
+                            </h2>
+                            <p class="card-subtitle">Continue your learning journey</p>
+                        </div>
+                        
+                        <div class="actions-grid">
+                            <button class="btn-primary" id="continueLesson">
+                                <i class="fas fa-play-circle"></i> Continue Lesson
+                            </button>
+                            
+                            <button class="btn-primary" id="practiceExercises">
+                                <i class="fas fa-pencil-alt"></i> Practice Exercises
+                            </button>
+                            
+                            <!-- ADDED: Start Quiz Button that triggers popup -->
+                            <button class="btn-secondary" id="goToQuiz" onclick="showQuizPopup()">
+                                <i class="fas fa-question-circle"></i> Take a Quiz
+                            </button>
+                            
+                            <button class="btn-secondary" id="viewProgress">
+                                <i class="fas fa-chart-line"></i> View Progress
+                            </button>
+                            
+                            <!-- NEW: Feedback Dashboard Button -->
+                            <button class="btn-secondary" id="goToFeedback">
+                                <i class="fas fa-question-circle"></i> Help & Feedback
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Quick Help Modal -->
+            <div class="modal" id="helpModal">
+                <div class="modal-content">
+                    <h3><i class="fas fa-question-circle"></i> Quick Help</h3>
+                    <div class="help-options">
+                        <a href="#" class="help-item" id="goToFeedbackDashboard">
+                            <i class="fas fa-question-circle"></i>
+                            <div>
+                                <h4>Help & Feedback Center</h4>
+                                <p>Complete help dashboard with FAQ, contact, and feedback</p>
+                            </div>
+                        </a>
+                        <a href="#" class="help-item" id="contactSupport">
+                            <i class="fas fa-headset"></i>
+                            <div>
+                                <h4>Contact Support</h4>
+                                <p>Get help from our support team</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="btn-primary" id="closeHelp">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Dashboard Page - DATABASE DRIVEN -->
+        <div id="module-dashboard-page" class="hidden">
+            <!-- Page Container -->
+            <div id="module-page-container">
+                <!-- Header -->
+                <header class="module-header">
+                    <div class="logo">
+                        <i class="fas fa-calculator logo-icon"></i>
+                        <div class="logo-text">Math<span class="logo-accent">Hub</span></div>
+                    </div>
+                    
+                    <div class="lesson-title" id="moduleLessonTitle">
+                        <i class="fas fa-book"></i> Loading Lesson...
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn-secondary" id="backToLessonDashboard">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="dashboard-container">
+                    <!-- Main Content -->
+                    <main class="main-content">
+                        <!-- Lesson Content Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <i class="fas fa-book-open"></i> Lesson: <span id="moduleTitle">Loading...</span>
+                                </h2>
+                                <p class="card-subtitle" id="moduleSubtitle">Loading lesson content...</p>
+                            </div>
+                            
+                            <div class="lesson-content">
+                                <!-- Video Section -->
+                                <div class="media-container">
+                                    <div class="media-header">
+                                        <span><i class="fas fa-video"></i> Lesson Video</span>
+                                        <div class="media-controls">
+                                            <span id="videoTime" style="font-family: monospace; color: white;">0:00 / 0:00</span>
+                                            <button class="refresh-video-btn" id="refreshVideoBtn" title="Reload video">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="video-container">
+                                        <!-- VIDEO: Loaded from database -->
+                                        <video id="lessonVideo" width="100%" height="100%" controls>
+                                            <source src="" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                    <div class="video-info" id="videoInfo">
+                                        <p><i class="fas fa-info-circle"></i> Video loaded from database. Changes will appear automatically.</p>
+                                    </div>
+                                </div>
+                            
+                                <!-- Example Section -->
+                                <div class="step-container" id="exampleSection">
+                                    <div class="step-title">
+                                        <span class="step-number"><i class="fas fa-book"></i></span> Lesson Content
+                                    </div>
+                                    <div class="step-content" id="lessonContent">
+                                        <p>Loading lesson content from database...</p>
+                                        <div class="math-example">
+                                            <p><strong>Loading example...</strong></p>
+                                        </div>
+                                        <ol class="steps">
+                                            <li>Lesson steps will appear here</li>
+                                            <li>Loaded dynamically from database</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                                
+                                <!-- Divider Line -->
+                                <div style="height: 1px; background: var(--border-color); margin: 30px 0;"></div>
+                                
+                                <!-- Practice Problem Section -->
+                                <div class="practice-problem">
+                                    <h2><i class="fas fa-pencil-alt"></i> Practice Problem</h2>
+                                    <div class="problem-statement" id="practiceProblem">
+                                        Practice problem will appear here once loaded from database.
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn-primary" id="showHintBtn">
+                                            <i class="fas fa-lightbulb"></i> Show Hint
+                                        </button>
+                                        <button class="btn-secondary" id="showSolutionBtn">
+                                            <i class="fas fa-eye"></i> Show Solution
+                                        </button>
+                                        <button class="btn-primary" id="checkAnswerBtn">
+                                            <i class="fas fa-check"></i> Check Your Answer
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lesson Navigation -->
+                                <div class="lesson-navigation">
+                                    <button class="lesson-nav-btn nav-prev" id="prevLessonBtn" disabled>
+                                        <i class="fas fa-arrow-left"></i> Previous Lesson
+                                    </button>
+                                    
+                                    <button class="btn-primary" id="completeLessonBtn" data-lesson-id="1">
+                                        <i class="fas fa-check-circle"></i> Mark Lesson Complete
+                                    </button>
+                                    
+                                    <button class="lesson-nav-btn nav-next" id="nextLessonBtn" disabled>
+                                        Next Lesson <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                    
+                    <!-- Sidebar -->
+                    <aside class="sidebar">
+                        <!-- Progress and Learning Tool -->
+                        <div class="progress-learning-tool">
+                            <h2 class="progress-title">
+                                <i class="fas fa-chart-line"></i> Your Progress & Learning
+                            </h2>
+                            
+                            <!-- Current Lesson Progress -->
+                            <div class="lesson-progress-section">
+                                <h3><i class="fas fa-book"></i> Current Lesson Progress</h3>
+                                <div class="progress-bar-container">
+                                    <div class="progress-fill" id="lessonProgressFill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-details">
+                                    <span id="progressPercentage">0% Complete</span>
+                                    <span id="progressTime">0/0 min</span>
+                                </div>
+                            </div>
+                            
+                            
+                            <!-- Module Progress -->
+                            <div class="module-progress-section">
+                                <h3><i class="fas fa-cubes"></i> Module Progress</h3>
+                                <div class="module-item" id="moduleProgressContainer">
+                                    <!-- Module items will be loaded dynamically -->
+                                    <div class="loading-text">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading module progress...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        
+                        <!-- Learning Tools Container -->
+                        <div class="learning-tools-container">
+                            <h2 class="tools-title">
+                                <i class="fas fa-tools"></i> Learning Tools
+                            </h2>
+                            <p class="tools-subtitle">Interactive tools to enhance your learning experience</p>
+                            
+                            <div class="tools-grid">
+                                <div class="tool-item" id="openCalculator">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-calculator"></i>
+                                    </div>
+                                    <div class="tool-name">Calculator</div>
+                                    <div class="tool-description">Advanced math calculator with functions</div>
+                                </div>
+                                
+                                <div class="tool-item" id="openGraphTools">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="tool-name">Graph Tools</div>
+                                    <div class="tool-description">Visualize functions and equations</div>
+                                </div>
+                                
+                                <div class="tool-item" id="openNotepad">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-sticky-note"></i>
+                                    </div>
+                                    <div class="tool-name">Notepad</div>
+                                    <div class="tool-description">Take notes during lessons</div>
+                                </div>
+                                
+                                <div class="tool-item" id="openFormulaSheet">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="tool-name">Formula Sheet</div>
+                                    <div class="tool-description">Quick reference for formulas</div>
+                                </div>
+                                
+                                <div class="tool-item" id="openWhiteboard">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-paint-brush"></i>
+                                    </div>
+                                    <div class="tool-name">Whiteboard</div>
+                                    <div class="tool-description">Draw and solve problems visually</div>
+                                </div>
+                                
+                                <div class="tool-item" id="openTimer">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-stopwatch"></i>
+                                    </div>
+                                    <div class="tool-name">Timer</div>
+                                    <div class="tool-description">Track your study sessions</div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-info">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Click on any tool to open it in a new window. All tools save automatically.</p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- Hidden Audio Element -->
+            <audio id="exampleAudio" style="display: none;">
+                <source src="Audio/polynomial-addition-example.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+
+            <!-- Volume Button for Example Section -->
+            <button id="audioToggleBtn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: var(--primary); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+            
+
+        <!-- Practice Exercises Page -->
+        <div id="practice-exercises-page" class="hidden">
+            <div class="container">
+                <!-- Practice Content -->
+                <div class="practice-container">
+                    <!-- Welcome Section -->
+                    <section class="card welcome-card">
+                        <div class="welcome-header">
+                            <h1 class="welcome-title">Topic-Based Practice</h1>
+                            <div class="date-display" id="practiceDate">Today</div>
+                        </div>
+                        
+                        <div class="practice-intro">
+                            <div class="practice-icon-large">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="practice-intro-text">
+                                <p>Practice exercises unlock as you complete topics. Master each concept before moving to more challenging problems!</p>
+                                <div class="current-streak">
+                                    <i class="fas fa-unlock"></i> Unlocked: <span id="unlockedCount">0</span>/5 topics
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Topics Progress -->
+                    <section class="card full-width-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-book-open"></i> Topics Progress
+                            </h2>
+                            <p class="card-subtitle">Complete topics to unlock practice exercises</p>
+                        </div>
+                        
+                        <div class="topics-container" id="topicsContainer">
+                            <!-- Topics will be loaded dynamically from database -->
+                            <div class="loading-container">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading topics and progress...</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Current Practice Area -->
+                    <section class="card full-width-card" id="currentPracticeSection">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-brain"></i> Practice Exercises
+                            </h2>
+                            <p class="card-subtitle" id="practiceTopicTitle">Select a topic to practice</p>
+                        </div>
+                        
+                        <div class="exercise-area" id="exerciseArea">
+                            <div class="no-topic-selected">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <h3>Select a Topic</h3>
+                                <p>Choose a topic from the list above to start practicing</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Practice Statistics -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-chart-line"></i> Practice Statistics
+                            </h2>
+                            <p class="card-subtitle">Your performance across topics</p>
+                        </div>
+                        
+                        <div class="stats-grid" id="practiceStats">
+                            <!-- Stats will be loaded dynamically -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Dashboard Page -->
+        <div id="quiz-dashboard-page" class="hidden">
+            <div class="container">
+                <!-- Quiz Content -->
+                <div class="quiz-container">
+                    <!-- Quiz Header Section -->
+                    <div class="quiz-header-section">
+                        <h1 class="quiz-welcome-title">Welcome to QuizHub!</h1>
+                        <p class="quiz-subtitle">Test your knowledge and track your progress with interactive quizzes</p>
+                        
+                        <div class="quiz-stats-row">
+                            <div class="quiz-stat-card">
+                                <i class="fas fa-trophy"></i>
+                                <h3>Current Score</h3>
+                                <div class="quiz-stat-value" id="quizCurrentScore">Loading...</div>
+                            </div>
+                            <div class="quiz-stat-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>Accuracy</h3>
+                                <div class="quiz-stat-value" id="quizAccuracy">Loading...</div>
+                            </div>
+                            <div class="quiz-stat-card">
+                                <i class="fas fa-clock"></i>
+                                <h3>Time Spent</h3>
+                                <div class="quiz-stat-value" id="quizTimeSpent">Loading...</div>
+                            </div>
+                            <div class="quiz-stat-card">
+                                <i class="fas fa-medal"></i>
+                                <h3>Rank</h3>
+                                <div class="quiz-stat-value" id="quizRank">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Categories Grid - DATABASE DRIVEN -->
+                    <div class="quiz-categories-grid" id="quizCategoriesGrid">
+                        <div class="loading-container">
+                            <div class="loading-text">
+                                <i class="fas fa-spinner fa-spin"></i> Loading quizzes from database...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Quiz Interface (Initially Hidden) -->
+                    <div class="quiz-interface hidden" id="quizInterface">
+                        <div class="quiz-interface-header">
+                            <h2 class="quiz-active-title" id="quizActiveTitle">Quiz Title</h2>
+                            <div class="quiz-timer-container">
+                                <div class="quiz-timer" id="quizTimer">
+                                    <i class="fas fa-clock"></i> <span id="timerDisplay">00:00</span>
+                                </div>
+                                <div class="quiz-question-number">
+                                    Question <span id="currentQuestionNum">1</span>/<span id="totalQuestions">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-question-container">
+                            <div class="quiz-question-header">
+                                <h3 class="quiz-question-text" id="quizQuestionText">
+                                    Loading question...
+                                </h3>
+                            </div>
+                            
+                            <div class="quiz-options-grid" id="quizOptionsGrid">
+                                <!-- Options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-interface-footer">
+                            <div class="quiz-progress-indicator">
+                                <div class="quiz-progress-dots" id="quizProgressDots">
+                                    <!-- Progress dots will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Feedback Container (Initially Hidden) -->
+                    <div class="quiz-feedback-container hidden" id="quizFeedbackContainer">
+                        <div class="quiz-feedback-header">
+                            <div class="quiz-feedback-icon correct" id="quizFeedbackIcon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3 class="quiz-feedback-title correct" id="quizFeedbackTitle">Correct Answer!</h3>
+                        </div>
+                        
+                        <div class="quiz-feedback-content">
+                            <p class="quiz-correct-answer" id="quizCorrectAnswer">
+                                The correct answer is: <strong>Loading...</strong>
+                            </p>
+                            <p class="quiz-explanation" id="quizExplanation">
+                                Loading explanation...
+                            </p>
+                        </div>
+                        
+                        <div class="quiz-category-actions">
+                            <button class="quiz-review-btn" id="retryQuestionBtn">
+                                <i class="fas fa-redo"></i> Try Similar
+                            </button>
+                            <button class="quiz-start-btn" id="continueQuizBtn">
+                                Continue <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Results Container (Initially Hidden) -->
+                    <div class="quiz-results-container hidden" id="quizResultsContainer">
+                        <div class="quiz-results-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        
+                        <h2 class="quiz-results-title">Quiz Completed!</h2>
+                        <p class="quiz-results-subtitle" id="quizResultsSubtitle">Loading quiz...</p>
+                        
+                        <div class="quiz-results-score" id="quizResultsScore">0%</div>
+                        
+                        <div class="quiz-results-details">
+                            <div class="quiz-result-detail">
+                                <div class="quiz-result-detail-value" id="correctAnswersCount">0</div>
+                                <div class="quiz-result-detail-label">Correct Answers</div>
+                            </div>
+                            <div class="quiz-result-detail">
+                                <div class="quiz-result-detail-value" id="timeTaken">00:00</div>
+                                <div class="quiz-result-detail-label">Time Taken</div>
+                            </div>
+                            <div class="quiz-result-detail">
+                                <div class="quiz-result-detail-value" id="scoreEarned">0</div>
+                                <div class="quiz-result-detail-label">Points Earned</div>
+                            </div>
+                            <div class="quiz-result-detail">
+                                <div class="quiz-result-detail-value" id="accuracyRate">0%</div>
+                                <div class="quiz-result-detail-label">Accuracy</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-results-actions">
+                            <button class="quiz-review-btn" id="reviewQuizBtn">
+                                <i class="fas fa-redo"></i> Review Answers
+                            </button>
+                            <button class="quiz-start-btn" id="newQuizBtn">
+                                <i class="fas fa-play"></i> Try Another Quiz
+                            </button>
+                            <button class="quiz-start-btn" id="backToQuizzesBtn">
+                                <i class="fas fa-home"></i> Back to Quizzes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Badges Section - DATABASE DRIVEN -->
+                    <div class="badges-container" id="badgesContainer">
+                        <h2 class="card-title">
+                            <i class="fas fa-medal"></i> Your Quiz Badges
+                        </h2>
+                        <p class="card-subtitle">Earn badges by completing quizzes and achieving high scores</p>
+                        
+                        <div class="badges-grid" id="badgesGrid">
+                            <div class="loading-container">
+                                <div class="loading-text">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading badges from database...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Section - DATABASE DRIVEN -->
+                    <div class="leaderboard-container" id="leaderboardContainer">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-bar"></i> Quiz Leaderboard
+                        </h2>
+                        <p class="card-subtitle">Top performers this week</p>
+                        
+                        <div class="leaderboard-list" id="leaderboardList">
+                            <div class="loading-container">
+                                <div class="loading-text">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading leaderboard from database...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracking Dashboard Page -->
+        <div id="progress-page" class="hidden">
+            <!-- Progress content remains the same -->
+            <div class="container">
+                <!-- Header -->
+                <header class="header">
+                    <div class="logo" id="progressLogo">
+                        <i class="fas fa-chart-line logo-icon"></i>
+                        <div class="logo-text">Progress<span class="logo-accent">Tracker</span></div>
+                    </div>
+                    
+                    <!-- Back Button -->
+                    <button class="back-button" id="backToDashboardFromProgress">
+                    </button>
+                </header>
+
+                <!-- Progress Dashboard Content -->
+                <div class="progress-container">
+                    <!-- Summary Stats Card -->
+                    <section class="card welcome-card animate-fade-in">
+                        <div class="welcome-header">
+                            <h1 class="welcome-title" id="progressWelcomeTitle">Your Learning Progress</h1>
+                            <div class="date-display" id="progressDate">Last updated: Today</div>
+                        </div>
+                        
+                        <div class="progress-summary-stats">
+                            <div class="summary-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Overall Progress</h3>
+                                    <div class="stat-value" id="overallProgress">0%</div>
+                                    <div class="progress-bar-container mini">
+                                        <div class="progress-fill progress-good" id="overallProgressBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Total Points</h3>
+                                    <div class="stat-value" id="totalPointsProgress">0</div>
+                                    <p class="stat-change" id="pointsChange">+0 this week</p>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Time Invested</h3>
+                                    <div class="stat-value" id="totalTime">0h</div>
+                                    <p class="stat-change" id="timeChange">0h this week</p>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Badges Earned</h3>
+                                    <div class="stat-value" id="totalBadges">0/0</div>
+                                    <p class="stat-change" id="badgesChange">0 new this month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Progress Charts -->
+                    <section class="card full-width-card animate-fade-in" style="animation-delay: 0.1s">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-chart-bar"></i> Weekly Progress Trends
+                            </h2>
+                            <div class="time-period-selector">
+                                <select id="timePeriodSelect" class="form-control">
+                                    <option value="week">Last 7 Days</option>
+                                    <option value="month">Last 30 Days</option>
+                                    <option value="quarter">Last 3 Months</option>
+                                    <option value="year">Last Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>Daily Practice Time</h3>
+                                <div class="chart" id="practiceTimeChart">
+                                    <div class="simple-bar-chart">
+                                        <div class="chart-bars" id="practiceTimeBars">
+                                            <!-- Bars will be loaded dynamically -->
+                                        </div>
+                                        <div class="chart-labels" id="practiceTimeLabels">
+                                            <!-- Labels will be loaded dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <h3>Accuracy Rate</h3>
+                                <div class="chart" id="accuracyChart">
+                                    <div class="simple-line-chart">
+                                        <div class="chart-line" id="accuracyLine">
+                                            <!-- Line points will be loaded dynamically -->
+                                        </div>
+                                        <div class="chart-labels" id="accuracyLabels">
+                                            <!-- Labels will be loaded dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Topic Progress Breakdown -->
+                    <section class="card animate-fade-in" style="animation-delay: 0.2s">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-book-open"></i> Topic Progress Breakdown
+                            </h2>
+                            <p class="card-subtitle">Detailed progress for each learning topic</p>
+                        </div>
+                        
+                        <div class="topics-progress-detailed" id="topicsProgressDetailed">
+                            <!-- Topic progress items will be loaded dynamically -->
+                            <div class="loading-container">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading topic progress...</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Performance Analytics -->
+                    <section class="card animate-fade-in" style="animation-delay: 0.3s">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-chart-line"></i> Performance Analytics
+                            </h2>
+                            <p class="card-subtitle">Your learning efficiency and improvement trends</p>
+                        </div>
+                        
+                        <div class="performance-grid" id="performanceGrid">
+                            <!-- Performance cards will be loaded dynamically -->
+                            <div class="loading-container">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading performance analytics...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="learning-insights">
+                            <h4><i class="fas fa-lightbulb"></i> Learning Insights</h4>
+                            <ul class="insights-list" id="insightsList">
+                                <!-- Insights will be loaded dynamically -->
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Achievement Timeline -->
+                    <section class="card full-width-card animate-fade-in" style="animation-delay: 0.4s">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-trophy"></i> Achievement Timeline
+                            </h2>
+                            <p class="card-subtitle">Your journey and milestones</p>
+                        </div>
+                        
+                        <div class="timeline" id="achievementTimeline">
+                            <!-- Timeline items will be loaded dynamically -->
+                            <div class="loading-container">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading achievement timeline...</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Goals and Recommendations -->
+<section class="card animate-fade-in" style="animation-delay: 0.5s">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-bullseye"></i> Learning Goals & Recommendations
+        </h2>
+        <p class="card-subtitle">Personalized suggestions for improvement</p>
+    </div>
+    
+    <!-- Add Goal Button -->
+    <div class="goals-actions" style="margin-bottom: 15px; text-align: right;">
+        <button class="btn-primary" id="addGoalBtn">
+            <i class="fas fa-plus"></i> Add New Goal
+        </button>
+    </div>
+    
+    <div class="goals-container" id="goalsContainer">
+        <!-- Goals will be loaded dynamically -->
+        <div class="loading-container">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading goals and recommendations...</p>
+        </div>
+    </div>
+</section>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Settings Dashboard Page -->
+        <div id="settings-page" class="hidden">
+            <!-- Settings content remains the same -->
+            <div class="page-container">
+                <!-- Header -->
+                <div class="dashboard-container">
+                    <!-- Main Content Area -->
+                    <div class="main-settings">
+                        <!-- General Settings -->
+                        <div id="general" class="settings-section active">
+                            <div class="section-header">
+                                <h2><i class="fas fa-user"></i> General Settings</h2>
+                                <p class="section-subtitle">Manage your profile and regional preferences</p>
+                            </div>
+
+                            <!-- Settings Page - Profile Information Section -->
+<div class="settings-page">
+    <div class="settings-grid">
+        <!-- Profile Overview Card -->
+        <div class="settings-card profile-overview-card">
+            <div class="profile-overview">
+                <div class="profile-avatar-large" id="profileInitials">
+                    <span>JD</span> <!-- Initials will be dynamically updated -->
+                </div>
+                <div class="profile-info">
+                    <h3 id="profileDisplayName">John Doe</h3>
+                    <p id="profileEmail">john.doe@example.com</p>
+                    <p id="profileRole">Student</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Information Card -->
+        <div class="settings-card">
+            <h3><i class="fas fa-user-edit"></i> Profile Information</h3>
+            <form id="profileForm">
+                <div class="form-row">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="displayName" placeholder="Enter your full name">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter your username">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="userEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Profile Picture</label>
+                    <div class="file-upload">
+                        <div class="profile-preview" id="profilePreview">
+                            <div class="profile-initials-preview" id="profileInitialsPreview">JD</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="saveProfileBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancelProfileBtn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Account Statistics Card -->
+        <div class="settings-card">
+            <h3><i class="fas fa-chart-bar"></i> Account Statistics</h3>
+            <div class="stats-list">
+                <div class="stat-item">
+                    <span class="stat-label">Member Since:</span>
+                    <span class="stat-value" id="memberSince">Loading...</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Login:</span>
+                    <span class="stat-value" id="lastLogin">Loading...</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Account Type:</span>
+                    <span class="stat-value" id="accountRole">Loading...</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Account Status:</span>
+                    <span class="stat-value" id="accountStatus">
+                        <span class="badge-active">Active</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="settings-card">
+            <h3><i class="fas fa-key"></i> Change Password</h3>
+            <form id="changePasswordForm">
+                <div class="form-row">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="changePasswordBtn">
+                        <i class="fas fa-key"></i> Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danger Zone Card -->
+        <div class="settings-card danger-zone">
+            <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+            <p>Once you delete your account, there is no going back. Please be certain.</p>
+            <button class="btn-danger" id="deleteAccountBtn">
+                <i class="fas fa-trash-alt"></i> Delete Account
+            </button>
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Feedback Dashboard Page -->
+        <div id="feedback-page" class="hidden">
+            <!-- Feedback content remains the same -->
+            <div class="help-dashboard-container">
+                <!-- Header -->
+                <div class="help-header">
+                    <div class="header-left">
+                        <h1><i class="fas fa-question-circle"></i> Help & Feedback Center</h1>
+                        <p>Get help, send feedback, and find resources to enhance your MathHub experience</p>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn btn-primary" id="emergencyHelp">
+                            <i class="fas fa-life-ring"></i>
+                            Emergency Help
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- FAQ Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon icon-faq">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <h2>Frequently Asked Questions</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    How do I reset my password?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>To reset your password, go to the login page and click "Forgot Password". Enter your email address and follow the instructions sent to your inbox.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    How can I track my learning progress?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Visit the Progress page in your dashboard. You'll find detailed analytics about your completed lessons, practice exercises, and quiz scores.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    Are there mobile apps available?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Yes! MathHub is available on both iOS and Android. Download from the App Store or Google Play Store.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    How do I earn badges and points?
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Complete lessons, practice exercises, and participate in quiz games to earn points. Badges are awarded for achieving specific milestones.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Support -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon icon-contact">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h2>Contact Support</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="contact-methods">
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <h4>Email Support</h4>
+                                        <p>support@mathhub.com</p>
+                                        <p class="response-time">Response time: 24 hours</p>
+                                    </div>
+                                </div>
+
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <h4>Phone Support</h4>
+                                        <p>+1 (800) MATH-HUB</p>
+                                        <p class="hours">Mon-Fri: 9AM-6PM EST</p>
+                                    </div>
+                                </div>
+
+                                <div class="contact-method">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div>
+                                        <h4>Live Chat</h4>
+                                        <p>Available during business hours</p>
+                                        <button class="btn btn-primary" style="margin-top: 10px; padding: 8px 15px;">
+                                            <i class="fas fa-comment-dots"></i>
+                                            Start Chat
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Send Feedback Card -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-icon icon-feedback">
+            <i class="fas fa-comment-alt"></i>
+        </div>
+        <h2>Send Feedback</h2>
+    </div>
+    <div class="card-body">
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="feedbackType">Feedback Type</label>
+                <select id="feedbackType" class="form-control">
+                    <option value="suggestion">Suggestion</option>
+                    <option value="bug">Bug Report</option>
+                    <option value="praise">Praise</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="feedbackMessage">Your Feedback</label>
+                <textarea id="feedbackMessage" class="form-control" rows="4" 
+                          placeholder="Tell us what you think..."></textarea>
+            </div>
+
+            <div class="form-group">
+    <label>Overall Rating</label>
+    <div class="rating" id="ratingStars">
+        <span class="star" data-rating="1">☆</span>
+        <span class="star" data-rating="2">☆</span>
+        <span class="star" data-rating="3">☆</span>
+        <span class="star" data-rating="4">☆</span>
+        <span class="star" data-rating="5">☆</span>
+    </div>
+    <input type="hidden" id="ratingValue" name="rating" value="0">
+</div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-paper-plane"></i>
+                Submit Feedback
+            </button>
+        </form>
+        <div class="success-message" id="feedbackSuccess" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            Thank you for your feedback! We'll review it shortly.
+        </div>
+    </div>
+</div>
+
+<!-- Feedback History Section (Optional) -->
+<div class="card mt-4" id="feedbackHistoryContainer">
+    <div class="card-header">
+        <div class="card-icon">
+            <i class="fas fa-history"></i>
+        </div>
+        <h2>Your Feedback History</h2>
+    </div>
+    <div class="card-body" id="feedbackHistory">
+        <!-- Will be populated by JavaScript -->
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- ADDED: Quiz Popup Container -->
+    <div class="quiz-popup-overlay hidden" id="quizPopup">
+        <div class="quiz-popup-container">
+            <div class="quiz-popup-header">
+                <h2><i class="fas fa-question-circle"></i> Quick Math Quiz</h2>
+                <button class="close-quiz-popup" onclick="closeQuizPopup()">&times;</button>
+            </div>
+            
+            <div class="quiz-popup-body">
+                <div class="quiz-meta-info">
+                    <div class="quiz-meta-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span id="quizTotalQuestions">5 Questions</span>
+                    </div>
+                    <div class="quiz-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="quizTimeLimit">5 Minutes</span>
+                    </div>
+                    <div class="quiz-meta-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span id="quizDifficulty">Beginner Level</span>
+                    </div>
+                </div>
+                
+                <div class="quiz-instructions">
+                    <h4><i class="fas fa-info-circle"></i> Quiz Instructions:</h4>
+                    <ul>
+                        <li>Answer all questions to complete the quiz</li>
+                        <li>You have <span id="quizTimeLimitText">5 minutes</span> to complete the quiz</li>
+                        <li>Select the correct answer by clicking on it</li>
+                        <li>You can change your answer before submitting</li>
+                        <li>Your score will be displayed at the end</li>
+                    </ul>
+                </div>
+                
+                <!-- Question Container - ONE QUESTION AT A TIME -->
+                <div class="quiz-question-container" id="currentQuestionContainer">
+                    <h3 class="quiz-question" id="currentQuestionText">Loading question...</h3>
+                    <div class="quiz-options" id="currentQuestionOptions">
+                        <!-- Options will be loaded dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Quiz Results -->
+                <div class="quiz-results-popup hidden" id="quizResults">
+                    <div class="quiz-results-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h2>Quiz Completed!</h2>
+                    <p>Great job! Here are your results:</p>
+                    <div class="quiz-score-display" id="finalScore">0%</div>
+                    <div class="quiz-results-details">
+                        <div class="result-detail">
+                            <div class="result-detail-value" id="correctCount">0</div>
+                            <div class="result-detail-label">Correct</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="result-detail-value" id="totalQuestionsCount">0</div>
+                            <div class="result-detail-label">Total</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="result-detail-value" id="timeSpent">0:00</div>
+                            <div class="result-detail-label">Time</div>
+                        </div>
+                        <div class="result-detail">
+                            <div class="result-detail-value" id="scorePoints">0</div>
+                            <div class="result-detail-label">Points</div>
+                        </div>
+                    </div>
+                    <button class="quiz-restart-btn" onclick="restartQuiz()">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quiz-popup-footer">
+                <div class="quiz-timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="quizTimerDisplay">05:00</span>
+                </div>
+                <div class="quiz-popup-actions">
+                    <button class="btn-secondary" onclick="closeQuizPopup()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div class="modal" id="completionModal">
+        <div class="modal-content">
+            <h3><i class="fas fa-trophy"></i> Topic Mastered!</h3>
+            <p>Congratulations! You've completed all practice exercises for <span id="completedTopicName">this topic</span>.</p>
+            <div class="progress-reward">
+                <i class="fas fa-unlock-alt"></i>
+                <div>
+                    <h4>New Topic Unlocked!</h4>
+                    <p>You can now access more challenging problems.</p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" id="continuePracticeBtn">Continue Practicing</button>
+                <button class="btn-secondary" id="returnToTopicsBtn">Return to Topics</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="modal" id="progressModal">
+        <div class="modal-content">
+            <h3><i class="fas fa-trophy"></i> Great Progress!</h3>
+            <p>You've completed <span id="completedCount">0</span> exercises today. Keep going!</p>
+            <div class="progress-reward">
+                <i class="fas fa-medal"></i>
+                <div>
+                    <h4>Daily Goal: 5 exercises</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="dailyProgress" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" id="closeProgressModal">Continue Practicing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Footer -->
+    <footer class="external-footer hidden" id="external-footer">
+        <p><span class="logo-text-small">MathHub</span> © 2026 - Interactive Math Learning Platform</p>
+    </footer>
+
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout from your MathHub account?</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="cancelLogout">Cancel</button>
+                <button class="btn-primary" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <h3>Terms and Conditions</h3>
+            <p>By using MathHub, you agree to our terms of service. Your data is protected and will not be shared with third parties.</p>
+            <div class="modal-buttons">
+                <button class="btn-primary" id="closeTerms">I Agree</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Modal (for expanded tool view) -->
+    <div class="tool-modal hidden" id="toolModal">
+        <div class="tool-modal-content">
+            <div class="tool-modal-header">
+                <h3><i class="fas fa-calculator" id="toolModalIcon"></i> <span id="toolModalTitle">Calculator</span> <span class="tool-status" id="toolStatus">Active</span></h3>
+                <button class="close-tool-modal">&times;</button>
+            </div>
+            <div class="tool-modal-body">
+                <div id="toolContent">
+                    <!-- Tool content will be loaded here -->
+                </div>
+                <div class="tool-instructions" id="toolInstructions">
+                    <h4><i class="fas fa-info-circle"></i> How to use this tool:</h4>
+                    <p id="toolInstructionsText">Instructions will appear here based on the selected tool.</p>
+                </div>
+                <div class="tool-actions">
+                    <button class="btn-secondary" id="closeToolBtn">Close</button>
+                    <button class="btn-primary" id="launchToolBtn">Launch Tool</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-nav">
+        <div class="footer-nav-content">
+            <a href="#" class="footer-nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="footer-nav-item" data-page="practice">
+                <i class="fas fa-book-open"></i>
+                <span>Practice</span>
+            </a>
+            <button class="footer-hamburger" id="footerHamburgerBtn">
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
+            </button>
+            <a href="#" class="footer-nav-item" data-page="quiz">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
+            </a>
+            <a href="#" class="footer-nav-item" data-page="settings">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-panel" id="mobileMenuPanel">
+        <div class="mobile-menu-header">
+            <h3><i class="fas fa-bars"></i> Navigation Menu</h3>
+            <button class="close-menu-btn" id="closeMenuBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-grid">
+            <a href="#" class="mobile-menu-item active" onclick="showDashboard(event)">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showPracticeDashboard(event)">
+                <i class="fas fa-book-open"></i>
+                <span>Practice</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showQuizDashboard(event)">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showProgressPage(event)">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showFeedbackPage(event)">
+                <i class="fas fa-comments"></i>
+                <span>Feedback</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="showSettingsPage(event)">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="goToModuleDashboard(event)">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="logoutUser(event)">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+    <script src="factolearn.js"></script>
+    <!-- Tool Modals Container - ILAGAY ITO SA BABA NG PAGE, BEFORE </body> -->
+<div id="toolModalsContainer"></div>
+</body>
+</html>
