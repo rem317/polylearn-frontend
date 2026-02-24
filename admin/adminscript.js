@@ -16627,7 +16627,7 @@ function togglePasswordVisibility() {
     }
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://backend-cir2.onrender.com/api';
 let authToken = localStorage.getItem('admin_token') || '';
 
 // Function para mag-check ng authentication
